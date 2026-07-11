@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>نتيجة البحث</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="container medium" id="resultsContainer">
+<h2>نتائج البحث</h2>
+<p>... جاري البحث</p>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/api.js"></script>
+<script>
+async function run(){
+    const params = new URLSearchParams(window.location.search);
+    const passport = (params.get('passport') || '').trim();
+    const report_date = params.get('report_date') || '';
+    const phone = (params.get('phone') || '').trim();
+
+    const data = await sheetsGetData();
+    const results = data.filter(r =>
+        String(r.passport) === passport &&
+        String(r.report_date) === report_date &&
+        (phone === '' || String(r.phone) === phone)
+    );
+
+    // نخزن النتائج مؤقتًا عشان صفحة تصدير الإكسل (بديل $_SESSION['exportResults'])
+    sessionStorage.setItem('nsh_export_results', JSON.stringify(results));
+
+    const container = document.getElementById('resultsContainer');
+    if (results.length > 0) {
+        let html = '<h2>نتائج البحث</h2>';
+        results.forEach(report => {
+            const statusClass = report.report_status === 'valid' ? 'valid-stamp' : 'not-valid-stamp';
+            const statusText = report.report_status === 'valid' ? 'Report Valid' : 'Report Invalid';
+            html += `
+            <div class="report-card">
+                <p><span class="label">رقم الباسبور:</span> ${escapeHtml(report.passport)}</p>
+                <p><span class="label">الاسم عربي:</span> ${escapeHtml(report.name_ar)}</p>
+                <p><span class="label">English Name:</span> ${escapeHtml(report.name_en)}</p>
+                <p><span class="label">رقم التليفون:</span> ${escapeHtml(report.phone)}</p>
+                <p><span class="label">تاريخ التقرير:</span> ${escapeHtml(report.report_date)}</p>
+                <p><span class="stamp-square ${statusClass}">${statusText}</span></p>
+            </div>`;
+        });
+        html += `
+        <div class="button-group">
+            <button class="search-again" onclick="window.location.href='view.html'">بحث مرة أخرى</button>
+            <button class="print-btn" onclick="window.print()">طباعة</button>
+            <button class="export-btn" onclick="window.location.href='export_excel.html'">تصدير Excel</button>
+        </div>`;
+        container.innerHTML = html;
+    } else {
+        container.innerHTML = `
+        <h2>نتائج البحث</h2>
+        <p class="no-result">لا توجد نتائج مطابقة للبحث.</p>
+        <button class="search-again" onclick="window.location.href='view.html'">بحث مرة أخرى</button>`;
+    }
+}
+run();
+</script>
+</body>
+</html>
