@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الداشبورد التحليلي</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1f7a2e">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<link rel="icon" type="image/jpeg" href="img/logo.jpg">
+</head>
+<body>
+
+<header class="site-header">
+    <img src="img/logo.jpg" alt="مجمع نهج الشفاء الطبي العام" class="logo-img">
+    <div class="brand-text">
+        <strong>مجمع نهج الشفاء الطبي العام</strong>
+        <span>الداشبورد التحليلي</span>
+    </div>
+    <div class="header-spacer"></div>
+    <div class="header-actions">
+        <a href="dashboard.html" class="back-btn">⬅️ إضافة تقرير</a>
+        <a href="#" class="logout-btn" onclick="logout(); return false;">⎋ تسجيل الخروج</a>
+    </div>
+</header>
+
+<div class="container" id="dashboardPrintArea">
+
+<div class="print-logo-header">
+    <img src="img/logo.jpg" alt="مجمع نهج الشفاء الطبي العام" style="height:40px;">
+    <strong>مجمع نهج الشفاء الطبي العام — الداشبورد التحليلي</strong>
+</div>
+
+<h2>نظرة عامة على التقارير</h2>
+<p class="user-badge" style="text-align:center;">مرحبًا <strong id="currentUserLabel"></strong> — إليك ملخص أداء النظام</p>
+
+<!-- فلترة + تصدير -->
+<div class="dash-toolbar">
+    <div class="field">
+        <label for="filterFrom">من تاريخ:</label>
+        <input type="date" id="filterFrom">
+    </div>
+    <div class="field">
+        <label for="filterTo">إلى تاريخ:</label>
+        <input type="date" id="filterTo">
+    </div>
+    <div class="field">
+        <label for="filterSearch">بحث (باسبور / إقامة / تليفون):</label>
+        <input type="text" id="filterSearch" placeholder="رقم الباسبور أو التليفون...">
+    </div>
+    <div class="actions">
+        <button onclick="applyFilters()">🔍 تطبيق الفلتر</button>
+        <button onclick="resetFilters()" style="background:#6c7a72;">↺ إعادة تعيين</button>
+    </div>
+</div>
+<div class="dash-toolbar" style="margin-top:10px;">
+    <div class="actions" style="margin-inline-start:0;">
+        <button class="print-btn" onclick="window.print()">🖨️ طباعة</button>
+        <button class="excel-btn" onclick="exportDashboardExcel()">📁 تصدير Excel</button>
+        <button onclick="exportDashboardImage()" style="background:#7a5cb0;">🖼️ تصدير صورة</button>
+        <button onclick="exportDashboardPDF()" style="background:#2e7d9b;">📄 تصدير PDF</button>
+    </div>
+</div>
+
+<div id="loadingMsg" style="text-align:center; color:var(--text-muted); padding: 30px 0;">... جاري تحميل البيانات</div>
+
+<div id="dashContent" style="display:none;">
+
+<!-- KPI cards -->
+<div class="kpi-grid">
+    <div class="kpi-card" style="--accent:#2e9b39;">
+        <div class="kpi-top"><div class="kpi-label">إجمالي التقارير</div><span class="kpi-icon">📊</span></div>
+        <div class="kpi-value" id="kpiTotal">0</div>
+        <div class="kpi-sub">كل التقارير المطابقة للفلتر الحالي</div>
+    </div>
+    <div class="kpi-card" style="--accent:#2e9b39;">
+        <div class="kpi-top"><div class="kpi-label">تقارير سليمة (Valid)</div><span class="kpi-icon">✅</span></div>
+        <div class="kpi-value" id="kpiValid">0</div>
+        <div class="kpi-sub" id="kpiValidPct">0%</div>
+    </div>
+    <div class="kpi-card" style="--accent:#e2483d;">
+        <div class="kpi-top"><div class="kpi-label">تقارير غير سليمة (Not Valid)</div><span class="kpi-icon">⛔</span></div>
+        <div class="kpi-value" id="kpiNotValid">0</div>
+        <div class="kpi-sub" id="kpiNotValidPct">0%</div>
+    </div>
+    <div class="kpi-card" style="--accent:#4f86b5;">
+        <div class="kpi-top"><div class="kpi-label">أُضيفت اليوم</div><span class="kpi-icon">🗓️</span></div>
+        <div class="kpi-value" id="kpiToday">0</div>
+        <div class="kpi-sub">تقارير جديدة النهارده</div>
+    </div>
+    <div class="kpi-card" style="--accent:#e0863b;">
+        <div class="kpi-top"><div class="kpi-label">أُضيفت هذا الأسبوع</div><span class="kpi-icon">📈</span></div>
+        <div class="kpi-value" id="kpiWeek">0</div>
+        <div class="kpi-sub">آخر 7 أيام</div>
+    </div>
+    <div class="kpi-card" style="--accent:#7a5cb0;">
+        <div class="kpi-top"><div class="kpi-label">عدد المستخدمين النشطين</div><span class="kpi-icon">👥</span></div>
+        <div class="kpi-value" id="kpiUsers">0</div>
+        <div class="kpi-sub">شاركوا في إضافة تقارير</div>
+    </div>
+</div>
+
+<!-- Charts -->
+<div class="charts-grid">
+    <div class="chart-card">
+        <h3>📅 عدد التقارير المُضافة يوميًا (آخر 14 يوم)</h3>
+        <canvas id="dailyChart"></canvas>
+    </div>
+    <div class="chart-card">
+        <h3>🥧 توزيع حالة التقارير</h3>
+        <canvas id="statusChart"></canvas>
+    </div>
+</div>
+
+<div class="charts-grid" style="margin-top:18px;">
+    <div class="chart-card">
+        <h3>👤 عدد التقارير حسب المستخدم</h3>
+        <canvas id="userChart"></canvas>
+    </div>
+    <div class="activity-card">
+        <h3>🕒 آخر النشاطات</h3>
+        <ul class="activity-list" id="recentList"></ul>
+    </div>
+</div>
+
+</div>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/api.js"></script>
+<script src="js/whatsapp.js"></script>
+<script src="js/footer.js"></script>
+<script src="js/pwa.js"></script>
+<script>
+const session = requireLogin();
+document.getElementById('currentUserLabel').textContent = session.username;
+
+let allData = [];
+let filteredData = [];
+let charts = {};
+
+function fmtPct(n, total){
+    if (!total) return '0%';
+    return Math.round((n/total)*100) + '%';
+}
+
+function lastNDays(n){
+    const days = [];
+    for (let i = n-1; i >= 0; i--){
+        const d = new Date();
+        d.setDate(d.getDate() - i);
+        days.push(d.toISOString().slice(0,10));
+    }
+    return days;
+}
+
+function initial(name){
+    return (name || '؟').trim().charAt(0).toUpperCase();
+}
+
+function applyFilters(){
+    const from = document.getElementById('filterFrom').value;
+    const to = document.getElementById('filterTo').value;
+    const q = document.getElementById('filterSearch').value.trim().toLowerCase();
+
+    filteredData = allData.filter(r => {
+        if (from && String(r.report_date) < from) return false;
+        if (to && String(r.report_date) > to) return false;
+        if (q) {
+            const hay = `${r.passport || ''} ${r.phone || ''}`.toLowerCase();
+            if (!hay.includes(q)) return false;
+        }
+        return true;
+    });
+    renderDashboard();
+}
+
+function resetFilters(){
+    document.getElementById('filterFrom').value = '';
+    document.getElementById('filterTo').value = '';
+    document.getElementById('filterSearch').value = '';
+    filteredData = allData.slice();
+    renderDashboard();
+}
+
+async function loadDashboard(){
+    allData = await sheetsGetData();
+    filteredData = allData.slice();
+    renderDashboard();
+    document.getElementById('loadingMsg').style.display = 'none';
+    document.getElementById('dashContent').style.display = 'block';
+}
+
+function renderDashboard(){
+    const data = filteredData;
+
+    const total = data.length;
+    const validCount = data.filter(r => r.report_status === 'valid').length;
+    const notValidCount = total - validCount;
+
+    const todayStr = new Date().toISOString().slice(0,10);
+    const addedToday = data.filter(r => (r.added_at || '').slice(0,10) === todayStr).length;
+
+    const weekAgo = new Date(); weekAgo.setDate(weekAgo.getDate() - 6);
+    const weekAgoStr = weekAgo.toISOString().slice(0,10);
+    const addedWeek = data.filter(r => (r.added_at || '').slice(0,10) >= weekAgoStr).length;
+
+    const usersSet = new Set(data.map(r => r.added_by).filter(Boolean));
+
+    document.getElementById('kpiTotal').textContent = total;
+    document.getElementById('kpiValid').textContent = validCount;
+    document.getElementById('kpiValidPct').textContent = fmtPct(validCount, total) + ' من الإجمالي';
+    document.getElementById('kpiNotValid').textContent = notValidCount;
+    document.getElementById('kpiNotValidPct').textContent = fmtPct(notValidCount, total) + ' من الإجمالي';
+    document.getElementById('kpiToday').textContent = addedToday;
+    document.getElementById('kpiWeek').textContent = addedWeek;
+    document.getElementById('kpiUsers').textContent = usersSet.size;
+
+    // ---- Daily chart (آخر 14 يوم حسب added_at) ----
+    const days = lastNDays(14);
+    const dailyCounts = days.map(day => data.filter(r => (r.added_at || '').slice(0,10) === day).length);
+
+    if (charts.daily) charts.daily.destroy();
+    charts.daily = new Chart(document.getElementById('dailyChart'), {
+        type: 'bar',
+        data: {
+            labels: days.map(d => d.slice(5)),
+            datasets: [{
+                label: 'عدد التقارير',
+                data: dailyCounts,
+                backgroundColor: '#2e9b39',
+                borderRadius: 6,
+                maxBarThickness: 28
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+        }
+    });
+
+    // ---- Status distribution ----
+    if (charts.status) charts.status.destroy();
+    charts.status = new Chart(document.getElementById('statusChart'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Valid', 'Not Valid'],
+            datasets: [{
+                data: [validCount, notValidCount],
+                backgroundColor: ['#2e9b39', '#e2483d'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { position: 'bottom' } }
+        }
+    });
+
+    // ---- By user ----
+    const userCounts = {};
+    data.forEach(r => {
+        const u = r.added_by || 'غير معروف';
+        userCounts[u] = (userCounts[u] || 0) + 1;
+    });
+    const userLabels = Object.keys(userCounts);
+    const userValues = Object.values(userCounts);
+
+    if (charts.user) charts.user.destroy();
+    charts.user = new Chart(document.getElementById('userChart'), {
+        type: 'bar',
+        data: {
+            labels: userLabels,
+            datasets: [{
+                label: 'عدد التقارير',
+                data: userValues,
+                backgroundColor: '#4f86b5',
+                borderRadius: 6,
+                maxBarThickness: 28
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: { x: { beginAtZero: true, ticks: { precision: 0 } } }
+        }
+    });
+
+    // ---- Recent activity ----
+    const recent = [...data]
+        .sort((a,b) => String(b.added_at || '').localeCompare(String(a.added_at || '')))
+        .slice(0, 10);
+
+    const list = document.getElementById('recentList');
+    if (!recent.length) {
+        list.innerHTML = '<li class="pending-empty">لا توجد نشاطات مطابقة للفلتر الحالي.</li>';
+    } else {
+        list.innerHTML = recent.map(r => {
+            const isValid = r.report_status === 'valid';
+            const badgeClass = isValid ? 'valid' : 'not-valid';
+            const badgeText = isValid ? 'Valid' : 'Not Valid';
+            return `<li class="activity-item">
+                <div class="activity-avatar">${escapeHtml(initial(r.name_ar || r.name_en))}</div>
+                <div class="activity-body">
+                    <div class="activity-title">${escapeHtml(r.name_ar || r.name_en || '-')} — ${escapeHtml(r.passport)}</div>
+                    <div class="activity-meta">
+                        <span class="badge ${badgeClass}">${badgeText}</span>
+                        <span>👤 ${escapeHtml(r.added_by || '-')}</span>
+                        <span>🕒 ${escapeHtml((r.added_at || '-').slice(0,16))}</span>
+                    </div>
+                </div>
+            </li>`;
+        }).join('');
+    }
+}
+
+function exportDashboardExcel(){
+    exportArrayToExcel(filteredData, [
+        { key: 'passport', label: 'رقم الباسبور' },
+        { key: 'name_ar', label: 'الاسم بالعربي' },
+        { key: 'name_en', label: 'English Name' },
+        { key: 'phone', label: 'رقم التليفون' },
+        { key: 'report_date', label: 'تاريخ التقرير' },
+        { key: 'report_status', label: 'حالة التقرير' },
+        { key: 'added_by', label: 'المستخدم' },
+        { key: 'added_at', label: 'تاريخ ووقت الإضافة' }
+    ], 'dashboard_report.xls');
+}
+
+async function exportDashboardImage(){
+    if (typeof html2canvas === 'undefined') { showToast('⚠️ تعذّر تحميل أداة التصدير، تأكد من الاتصال بالإنترنت.', true); return; }
+    showToast('⏳ جاري تجهيز الصورة...');
+    const canvas = await html2canvas(document.getElementById('dashboardPrintArea'), { backgroundColor: '#ffffff', scale: 2 });
+    const a = document.createElement('a');
+    a.href = canvas.toDataURL('image/png');
+    a.download = 'dashboard.png';
+    a.click();
+    showToast('✅ تم استخراج صورة الداشبورد بنجاح.');
+}
+
+async function exportDashboardPDF(){
+    if (typeof html2canvas === 'undefined' || typeof window.jspdf === 'undefined') { showToast('⚠️ تعذّر تحميل أداة التصدير، تأكد من الاتصال بالإنترنت.', true); return; }
+    showToast('⏳ جاري تجهيز ملف PDF...');
+    const canvas = await html2canvas(document.getElementById('dashboardPrintArea'), { backgroundColor: '#ffffff', scale: 2 });
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF('p', 'pt', [canvas.width, canvas.height]);
+    pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, canvas.width, canvas.height);
+    pdf.save('dashboard.pdf');
+    showToast('✅ تم استخراج ملف PDF بنجاح.');
+}
+
+loadDashboard();
+</script>
+
+</body>
+</html>
