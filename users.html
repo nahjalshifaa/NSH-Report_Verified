@@ -294,14 +294,21 @@ document.getElementById('addUserForm').addEventListener('submit', async function
         return;
     }
 
-    const hashedPassword = await hashPassword(password);
-    usersData.push({
-        username, full_name, password: hashedPassword, role,
-        status: 'active', idle_time: 30, warning_time: 5
-    });
-    const ok = await sheetsSaveUsers(usersData);
-    showMsg(ok ? '✅ تم إضافة المستخدم بنجاح!' : '⚠️ حصل خطأ أثناء الحفظ في الشيت، جرّب تاني.');
-    if (ok) e.target.reset();
+    try {
+        const hashedPassword = await hashPassword(password);
+        usersData.push({
+            username, full_name, password: hashedPassword, role,
+            status: 'active', idle_time: 30, warning_time: 5
+        });
+        const ok = await sheetsSaveUsers(usersData);
+        showMsg(ok ? '✅ تم إضافة المستخدم بنجاح!' : '⚠️ حصل خطأ أثناء الحفظ في الشيت، جرّب تاني.');
+        if (ok) e.target.reset();
+    } catch (err) {
+        console.error('add user error:', err);
+        showMsg((err && err.message === 'crypto_unavailable')
+            ? '⚠️ الموقع محتاج يفتح عن طريق HTTPS عشان تشفير كلمة السر يشتغل.'
+            : '⚠️ حصل خطأ غير متوقع، حاول تاني.');
+    }
     await loadUsers();
 });
 
@@ -309,12 +316,19 @@ async function saveUser(index){
     const row = document.querySelector(`tr[data-index="${index}"]`);
     usersData[index].full_name = row.querySelector('.f_full_name').value;
     usersData[index].role = row.querySelector('.f_role').value;
-    const pw = row.querySelector('.f_password').value;
-    if (pw) usersData[index].password = await hashPassword(pw);
     usersData[index].idle_time = Math.max(1, parseInt(row.querySelector('.f_idle_time').value) || 30);
     usersData[index].warning_time = Math.max(1, parseInt(row.querySelector('.f_warning_time').value) || 5);
-    const ok = await sheetsSaveUsers(usersData);
-    showMsg(ok ? '✅ تم حفظ بيانات المستخدم بنجاح!' : '⚠️ حصل خطأ أثناء الحفظ في الشيت، جرّب تاني.');
+    try {
+        const pw = row.querySelector('.f_password').value;
+        if (pw) usersData[index].password = await hashPassword(pw);
+        const ok = await sheetsSaveUsers(usersData);
+        showMsg(ok ? '✅ تم حفظ بيانات المستخدم بنجاح!' : '⚠️ حصل خطأ أثناء الحفظ في الشيت، جرّب تاني.');
+    } catch (err) {
+        console.error('save user error:', err);
+        showMsg((err && err.message === 'crypto_unavailable')
+            ? '⚠️ الموقع محتاج يفتح عن طريق HTTPS عشان تشفير كلمة السر يشتغل.'
+            : '⚠️ حصل خطأ غير متوقع، حاول تاني.');
+    }
     await loadUsers();
 }
 

@@ -76,8 +76,8 @@ function captchaWidgetHtml(prefix) {
         <div class="captcha-row">
             <button type="button" class="captcha-icon-btn" id="${prefix}CaptchaRefresh" title="تحديث الكود">🔄</button>
             <button type="button" class="captcha-icon-btn" id="${prefix}CaptchaCopy" title="نسخ الكود">📋</button>
-            <div class="captcha-code" id="${prefix}CaptchaCode"></div>
+            <div class="captcha-code" id="${prefix}CaptchaCode" dir="ltr"></div>
         </div>
-        <input type="text" id="${prefix}CaptchaInput" placeholder="اكتب الكود هنا أو دوس انسخ" autocomplete="off" required>
+        <input type="text" id="${prefix}CaptchaInput" placeholder="اكتب الكود هنا أو دوس انسخ" autocomplete="off" dir="ltr" required>
     </div>`;
 }

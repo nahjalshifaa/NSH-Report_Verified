@@ -80,6 +80,11 @@ async function sheetsSavePending(rows) { return sheetsSave('pending_users', rows
 // تشفير كلمة السر (SHA-256) — عشان متتخزنش نص صريح في شيت Google Sheets/Excel
 // ============================================================
 async function hashPassword(plainPassword) {
+    if (!window.crypto || !window.crypto.subtle) {
+        // بيحصل غالبًا لو الموقع بيفتح من غير HTTPS (أو من ملف محلي)،
+        // لأن المتصفح بيمنع crypto.subtle في السياقات غير الآمنة
+        throw new Error('crypto_unavailable');
+    }
     const data = new TextEncoder().encode(String(plainPassword));
     const hashBuffer = await crypto.subtle.digest('SHA-256', data);
     return Array.from(new Uint8Array(hashBuffer))
