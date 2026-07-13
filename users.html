@@ -85,11 +85,17 @@
 
 <div class="settings-section">
 <h3>إعدادات حقوق الملكية (الفوتر)</h3>
-<p style="color:var(--text-muted); font-size:14px; margin-top:-6px;">النص اللي بيظهر في أسفل كل صفحات الموقع. سيبه فاضي لو عايز ترجع للنص الافتراضي.</p>
+<p style="color:var(--text-muted); font-size:14px; margin-top:-6px;">النص وبيانات التواصل اللي بتظهر في أسفل كل صفحات الموقع. سيب أي حقل فاضي لو عايز ترجع للقيمة الافتراضية بتاعته.</p>
 <p id="copyrightMsg" class="success" style="display:none;"></p>
 <form id="copyrightSettingsForm">
 <label>نص حقوق الملكية</label>
 <input type="text" id="copyright_text" placeholder="© جميع حقوق الملكية الفكرية لهذا التطبيق محفوظة لدى الشركة المطوّرة — مجمع نهج الشفاء الطبي العام">
+<label>رقم التليفون الأول</label>
+<input type="text" id="footer_phone1" placeholder="01384679999">
+<label>رقم التليفون الثاني</label>
+<input type="text" id="footer_phone2" placeholder="05909331883">
+<label>البريد الإلكتروني</label>
+<input type="email" id="footer_email" placeholder="info@nahjalshifaa.com">
 <button type="submit">💾 حفظ نص حقوق الملكية</button>
 </form>
 </div>
@@ -194,6 +200,9 @@ async function loadWaSettings(){
     document.getElementById('wa_number').value = settingsData.whatsapp_number || '';
     document.getElementById('wa_message').value = settingsData.whatsapp_message || '';
     document.getElementById('copyright_text').value = settingsData.copyright_text || '';
+    document.getElementById('footer_phone1').value = settingsData.footer_phone1 || '';
+    document.getElementById('footer_phone2').value = settingsData.footer_phone2 || '';
+    document.getElementById('footer_email').value = settingsData.footer_email || '';
 }
 
 document.getElementById('waSettingsForm').addEventListener('submit', async function(e){
@@ -218,11 +227,20 @@ document.getElementById('copyrightSettingsForm').addEventListener('submit', asyn
     e.preventDefault();
     const copyrightMsgEl = document.getElementById('copyrightMsg');
     const copyrightText = document.getElementById('copyright_text').value.trim();
+    const phone1 = document.getElementById('footer_phone1').value.trim();
+    const phone2 = document.getElementById('footer_phone2').value.trim();
+    const email = document.getElementById('footer_email').value.trim();
 
-    settingsData = { ...settingsData, copyright_text: copyrightText };
+    settingsData = {
+        ...settingsData,
+        copyright_text: copyrightText,
+        footer_phone1: phone1,
+        footer_phone2: phone2,
+        footer_email: email
+    };
     const ok = await sheetsSaveSettings(settingsData);
     if (ok) {
-        copyrightMsgEl.textContent = '✅ تم حفظ نص حقوق الملكية بنجاح!';
+        copyrightMsgEl.textContent = '✅ تم حفظ بيانات الفوتر بنجاح!';
         copyrightMsgEl.style.display = 'block';
     } else {
         copyrightMsgEl.textContent = '⚠️ حصل خطأ أثناء الحفظ، تأكد من رابط ومفتاح Google Apps Script في js/config.js وحاول تاني.';

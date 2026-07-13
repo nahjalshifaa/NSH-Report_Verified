@@ -5,6 +5,9 @@ async function renderSiteFooter() {
     if (document.getElementById('siteFooter')) return;
     const year = new Date().getFullYear();
     const defaultText = `© جميع حقوق الملكية الفكرية لهذا التطبيق محفوظة لدى الشركة المطوّرة — مجمع نهج الشفاء الطبي العام ${year}`;
+    const defaultPhone1 = '01384679999';
+    const defaultPhone2 = '05909331883';
+    const defaultEmail = 'info@nahjalshifaa.com';
 
     const footer = document.createElement('footer');
     footer.id = 'siteFooter';
@@ -14,23 +17,45 @@ async function renderSiteFooter() {
             <p class="footer-copyright" id="footerCopyrightText">${defaultText}</p>
             <p class="footer-contact">
                 يمكنكم التواصل معنا:
-                <span class="footer-contact-item">📞 <a href="tel:+201384679999">01384679999</a> - <a href="tel:+205909331883">05909331883</a></span>
-                <span class="footer-contact-item">✉️ <a href="mailto:info@nahjalshifaa.com">info@nahjalshifaa.com</a></span>
+                <span class="footer-contact-item">📞 <a href="tel:${defaultPhone1}" id="footerPhone1">${defaultPhone1}</a> - <a href="tel:${defaultPhone2}" id="footerPhone2">${defaultPhone2}</a></span>
+                <span class="footer-contact-item">✉️ <a href="mailto:${defaultEmail}" id="footerEmail">${defaultEmail}</a></span>
             </p>
         </div>`;
     document.body.appendChild(footer);
 
-    // لو الأدمن حط نص مخصص لحقوق الملكية في الإعدادات، نستخدمه بدل النص الافتراضي
+    // لو الأدمن حط قيم مخصصة (نص حقوق الملكية / أرقام / إيميل) في الإعدادات، نستخدمها بدل الافتراضي
     try {
         if (typeof sheetsGetSettings === 'function') {
             const settings = await sheetsGetSettings();
+
             const customText = (settings.copyright_text || '').toString().trim();
             if (customText) {
                 document.getElementById('footerCopyrightText').textContent = customText;
             }
+
+            const phone1 = (settings.footer_phone1 || '').toString().trim();
+            if (phone1) {
+                const el = document.getElementById('footerPhone1');
+                el.textContent = phone1;
+                el.href = 'tel:' + phone1.replace(/[^0-9+]/g, '');
+            }
+
+            const phone2 = (settings.footer_phone2 || '').toString().trim();
+            if (phone2) {
+                const el = document.getElementById('footerPhone2');
+                el.textContent = phone2;
+                el.href = 'tel:' + phone2.replace(/[^0-9+]/g, '');
+            }
+
+            const email = (settings.footer_email || '').toString().trim();
+            if (email) {
+                const el = document.getElementById('footerEmail');
+                el.textContent = email;
+                el.href = 'mailto:' + email;
+            }
         }
     } catch (e) {
-        // تجاهل: يفضل النص الافتراضي شغال لو حصل أي خطأ في تحميل الإعدادات
+        // تجاهل: تفضل القيم الافتراضية شغالة لو حصل أي خطأ في تحميل الإعدادات
     }
 }
 

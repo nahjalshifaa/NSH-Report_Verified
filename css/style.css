@@ -415,11 +415,11 @@ tbody tr:nth-child(even){ background: #fbfdfb; }
     .footer-contact{ flex-direction: column; gap: 6px; }
 }
 
-/* ---------- PWA install widget (نفس تصميم زرار الواتساب، على الجنب التاني) ---------- */
+/* ---------- PWA install widget (نفس تصميم زرار الواتساب، فوقه بالظبط) ---------- */
 .pwa-widget{
     position: fixed;
-    bottom: 22px;
-    right: 22px;
+    bottom: 92px;
+    left: 22px;
     z-index: 900;
     display: flex;
     align-items: center;
@@ -461,7 +461,7 @@ tbody tr:nth-child(even){ background: #fbfdfb; }
 }
 .pwa-install-circle:hover{ background: var(--orange-dark); transform: scale(1.06); }
 @media (max-width: 720px){
-    .pwa-widget{ bottom: 14px; right: 14px; }
+    .pwa-widget{ bottom: 74px; left: 14px; }
     .pwa-install-pill{ padding: 8px 14px; font-size: 12.5px; }
     .pwa-install-circle{ width: 50px; height: 50px; font-size: 18px; }
 }
