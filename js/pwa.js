@@ -25,24 +25,32 @@ window.addEventListener('appinstalled', () => {
     hideInstallButton();
 });
 
+async function handleInstallClick() {
+    if (!deferredInstallPrompt) return;
+    deferredInstallPrompt.prompt();
+    await deferredInstallPrompt.userChoice;
+    deferredInstallPrompt = null;
+    hideInstallButton();
+}
+
+// نفس تصميم زرار الواتساب بالظبط: شريط نص + دائرة أيقونة، بس على الجنب التاني من الشاشة
 function showInstallButton() {
-    if (document.getElementById('pwaInstallBtn')) return;
-    const btn = document.createElement('button');
-    btn.id = 'pwaInstallBtn';
-    btn.type = 'button';
-    btn.className = 'pwa-install-btn';
-    btn.innerHTML = '⬇️ تثبيت التطبيق';
-    btn.addEventListener('click', async () => {
-        if (!deferredInstallPrompt) return;
-        deferredInstallPrompt.prompt();
-        await deferredInstallPrompt.userChoice;
-        deferredInstallPrompt = null;
-        hideInstallButton();
+    if (document.getElementById('pwaInstallWidget')) return;
+
+    const wrapper = document.createElement('div');
+    wrapper.id = 'pwaInstallWidget';
+    wrapper.className = 'pwa-widget';
+    wrapper.innerHTML = `
+        <a href="#" class="pwa-install-pill">⬇️ تثبيت التطبيق</a>
+        <button type="button" class="pwa-install-circle" aria-label="تثبيت التطبيق">⬇️</button>
+    `;
+    wrapper.querySelectorAll('.pwa-install-pill, .pwa-install-circle').forEach(el => {
+        el.addEventListener('click', (e) => { e.preventDefault(); handleInstallClick(); });
     });
-    document.body.appendChild(btn);
+    document.body.appendChild(wrapper);
 }
 
 function hideInstallButton() {
-    const btn = document.getElementById('pwaInstallBtn');
-    if (btn) btn.remove();
+    const el = document.getElementById('pwaInstallWidget');
+    if (el) el.remove();
 }

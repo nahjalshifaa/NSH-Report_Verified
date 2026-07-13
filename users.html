@@ -54,6 +54,9 @@
 <tr>
 <th>اسم المستخدم</th>
 <th>الاسم الكامل</th>
+<th>رقم التليفون</th>
+<th>الرقم الوظيفي</th>
+<th>الايميل</th>
 <th>الصلاحية</th>
 <th>الحالة</th>
 <th>مدة عدم النشاط</th>
@@ -77,6 +80,17 @@
 <label>نص الرسالة الافتراضي عند الضغط على الزرار</label>
 <input type="text" id="wa_message" placeholder="مرحبًا، أرغب في الاستفسار">
 <button type="submit">💾 حفظ إعدادات واتساب</button>
+</form>
+</div>
+
+<div class="settings-section">
+<h3>إعدادات حقوق الملكية (الفوتر)</h3>
+<p style="color:var(--text-muted); font-size:14px; margin-top:-6px;">النص اللي بيظهر في أسفل كل صفحات الموقع. سيبه فاضي لو عايز ترجع للنص الافتراضي.</p>
+<p id="copyrightMsg" class="success" style="display:none;"></p>
+<form id="copyrightSettingsForm">
+<label>نص حقوق الملكية</label>
+<input type="text" id="copyright_text" placeholder="© جميع حقوق الملكية الفكرية لهذا التطبيق محفوظة لدى الشركة المطوّرة — مجمع نهج الشفاء الطبي العام">
+<button type="submit">💾 حفظ نص حقوق الملكية</button>
 </form>
 </div>
 </div>
@@ -173,10 +187,13 @@ async function rejectPending(index){
     renderPending();
 }
 
+let settingsData = {};
+
 async function loadWaSettings(){
-    const settings = await sheetsGetSettings();
-    document.getElementById('wa_number').value = settings.whatsapp_number || '';
-    document.getElementById('wa_message').value = settings.whatsapp_message || '';
+    settingsData = await sheetsGetSettings();
+    document.getElementById('wa_number').value = settingsData.whatsapp_number || '';
+    document.getElementById('wa_message').value = settingsData.whatsapp_message || '';
+    document.getElementById('copyright_text').value = settingsData.copyright_text || '';
 }
 
 document.getElementById('waSettingsForm').addEventListener('submit', async function(e){
@@ -185,7 +202,8 @@ document.getElementById('waSettingsForm').addEventListener('submit', async funct
     const number = document.getElementById('wa_number').value.trim();
     const message = document.getElementById('wa_message').value.trim();
 
-    const ok = await sheetsSaveSettings({ whatsapp_number: number, whatsapp_message: message });
+    settingsData = { ...settingsData, whatsapp_number: number, whatsapp_message: message };
+    const ok = await sheetsSaveSettings(settingsData);
     if (ok) {
         waMsgEl.textContent = '✅ تم حفظ إعدادات واتساب بنجاح!';
         waMsgEl.style.display = 'block';
@@ -194,6 +212,23 @@ document.getElementById('waSettingsForm').addEventListener('submit', async funct
         waMsgEl.style.display = 'block';
     }
     setTimeout(() => { waMsgEl.style.display = 'none'; }, 4000);
+});
+
+document.getElementById('copyrightSettingsForm').addEventListener('submit', async function(e){
+    e.preventDefault();
+    const copyrightMsgEl = document.getElementById('copyrightMsg');
+    const copyrightText = document.getElementById('copyright_text').value.trim();
+
+    settingsData = { ...settingsData, copyright_text: copyrightText };
+    const ok = await sheetsSaveSettings(settingsData);
+    if (ok) {
+        copyrightMsgEl.textContent = '✅ تم حفظ نص حقوق الملكية بنجاح!';
+        copyrightMsgEl.style.display = 'block';
+    } else {
+        copyrightMsgEl.textContent = '⚠️ حصل خطأ أثناء الحفظ، تأكد من رابط ومفتاح Google Apps Script في js/config.js وحاول تاني.';
+        copyrightMsgEl.style.display = 'block';
+    }
+    setTimeout(() => { copyrightMsgEl.style.display = 'none'; }, 4000);
 });
 
 loadWaSettings();
@@ -207,7 +242,8 @@ function showMsg(text){
 function renderUsers(){
     const table = document.getElementById('usersTable');
     let html = `<tr>
-        <th>اسم المستخدم</th><th>الاسم الكامل</th><th>الصلاحية</th><th>الحالة</th>
+        <th>اسم المستخدم</th><th>الاسم الكامل</th><th>رقم التليفون</th><th>الرقم الوظيفي</th><th>الايميل</th>
+        <th>الصلاحية</th><th>الحالة</th>
         <th>مدة عدم النشاط</th><th>مدة التحذير</th><th>تعديل</th>
         <th>إيقاف/تشغيل</th><th>حذف</th><th>حفظ</th><th>كلمة السر</th></tr>`;
 
@@ -217,6 +253,9 @@ function renderUsers(){
         html += `<tr data-index="${index}">
             <td>${escapeHtml(u.username)}</td>
             <td><input type="text" class="f_full_name" value="${escapeHtml(u.full_name)}" readonly></td>
+            <td>${escapeHtml(u.phone || '-')}</td>
+            <td>${escapeHtml(u.employee_id || '-')}</td>
+            <td>${escapeHtml(u.email || '-')}</td>
             <td>
                 <select class="f_role" disabled>
                     <option value="user" ${u.role === 'user' ? 'selected' : ''}>User</option>
@@ -255,8 +294,9 @@ document.getElementById('addUserForm').addEventListener('submit', async function
         return;
     }
 
+    const hashedPassword = await hashPassword(password);
     usersData.push({
-        username, full_name, password, role,
+        username, full_name, password: hashedPassword, role,
         status: 'active', idle_time: 30, warning_time: 5
     });
     const ok = await sheetsSaveUsers(usersData);
@@ -270,7 +310,7 @@ async function saveUser(index){
     usersData[index].full_name = row.querySelector('.f_full_name').value;
     usersData[index].role = row.querySelector('.f_role').value;
     const pw = row.querySelector('.f_password').value;
-    if (pw) usersData[index].password = pw;
+    if (pw) usersData[index].password = await hashPassword(pw);
     usersData[index].idle_time = Math.max(1, parseInt(row.querySelector('.f_idle_time').value) || 30);
     usersData[index].warning_time = Math.max(1, parseInt(row.querySelector('.f_warning_time').value) || 5);
     const ok = await sheetsSaveUsers(usersData);

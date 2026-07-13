@@ -69,10 +69,10 @@ function initCaptcha(prefix) {
     };
 }
 
-function captchaWidgetHtml(prefix, hint) {
+function captchaWidgetHtml(prefix) {
     return `
     <div class="captcha-box">
-        <label>اكتب الكود اللي جنبك (عشان نتأكد إنك مش SPAM ${hint || ''})</label>
+        <label>اكتب الكود اللي جنبك (عشان نتأكد إنك مش SPAM )</label>
         <div class="captcha-row">
             <button type="button" class="captcha-icon-btn" id="${prefix}CaptchaRefresh" title="تحديث الكود">🔄</button>
             <button type="button" class="captcha-icon-btn" id="${prefix}CaptchaCopy" title="نسخ الكود">📋</button>

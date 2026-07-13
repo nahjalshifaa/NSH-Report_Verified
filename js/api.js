@@ -77,6 +77,17 @@ async function sheetsGetPending() { return sheetsGet('pending_users'); }
 async function sheetsSavePending(rows) { return sheetsSave('pending_users', rows); }
 
 // ============================================================
+// تشفير كلمة السر (SHA-256) — عشان متتخزنش نص صريح في شيت Google Sheets/Excel
+// ============================================================
+async function hashPassword(plainPassword) {
+    const data = new TextEncoder().encode(String(plainPassword));
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    return Array.from(new Uint8Array(hashBuffer))
+        .map(b => b.toString(16).padStart(2, '0'))
+        .join('');
+}
+
+// ============================================================
 // إدارة "الجلسة" (بديل session_start في PHP) — تُخزَّن في sessionStorage
 // ============================================================
 

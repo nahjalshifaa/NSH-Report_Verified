@@ -60,7 +60,7 @@
 <input type="text" id="reg_username" placeholder="يوزر نيم" required>
 <input type="tel" id="reg_phone" placeholder="رقم التليفون" required>
 <input type="text" id="reg_employee_id" placeholder="الرقم الوظيفي" required>
-<input type="email" id="reg_email" placeholder="الايميل" required>
+<input type="email" id="reg_email" placeholder="الايميل (اختياري)">
 <input type="password" id="reg_password" placeholder="باسورد" required>
 
 <div id="registerCaptchaContainer"></div>
@@ -82,10 +82,10 @@
 // لو المستخدم مسجل دخول بالفعل، يروح على الداشبورد مباشرة
 if (getSession()) window.location.href = 'dashboard.html';
 
-document.getElementById('loginCaptchaContainer').innerHTML = captchaWidgetHtml('login', 'إنك مش SPAM ويخربش الحساب');
+document.getElementById('loginCaptchaContainer').innerHTML = captchaWidgetHtml('login');
 const loginCaptcha = initCaptcha('login');
 
-document.getElementById('registerCaptchaContainer').innerHTML = captchaWidgetHtml('register', 'عشان نتأكد إنك مش SPAM');
+document.getElementById('registerCaptchaContainer').innerHTML = captchaWidgetHtml('register');
 const registerCaptcha = initCaptcha('register');
 
 function switchAuthTab(which){
@@ -112,8 +112,9 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
     submitBtn.disabled = true;
     submitBtn.textContent = '... جاري الدخول';
 
+    const hashedPassword = await hashPassword(password);
     const users = await sheetsGetUsers();
-    const match = users.find(u => u.username == username && u.password == password);
+    const match = users.find(u => u.username == username && u.password == hashedPassword);
 
     if (match && match.status === 'inactive') {
         errorEl.textContent = '⚠️ حسابك موقوف حاليًا، تواصل مع الأدمن.';
@@ -178,8 +179,9 @@ document.getElementById('registerForm').addEventListener('submit', async functio
         return;
     }
 
+    const hashedPassword = await hashPassword(password);
     pending.push({
-        full_name, username, phone, employee_id, email, password,
+        full_name, username, phone, employee_id, email, password: hashedPassword,
         requested_at: new Date().toISOString().slice(0,19).replace('T',' '),
         status: 'pending'
     });
