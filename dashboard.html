@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>لوحة التحكم</title>
 <link rel="stylesheet" href="css/style.css">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1f7a2e">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
 <link rel="icon" type="image/jpeg" href="img/logo.jpg">
 </head>
 <body>
@@ -53,19 +57,33 @@
 <button type="submit">إضافة التقرير</button>
 </form>
 
-<div class="toolbar">
-    <input type="text" id="searchInput" placeholder="🔍 بحث عن تقرير..." style="width:200px;">
-    <label>من:</label> <input type="date" id="fromDate">
-    <label>إلى:</label> <input type="date" id="toDate">
+<div class="toolbar dash-toolbar">
+    <div class="field">
+        <label for="searchInput">🔍 بحث (اسم / باسبور / تليفون)</label>
+        <input type="text" id="searchInput" placeholder="ابحث برقم الباسبور أو التليفون أو الاسم...">
+    </div>
+    <div class="field">
+        <label for="fromDate">من تاريخ:</label>
+        <input type="date" id="fromDate">
+    </div>
+    <div class="field">
+        <label for="toDate">إلى تاريخ:</label>
+        <input type="date" id="toDate">
+    </div>
+    <div class="field">
+        <label for="userFilter">المستخدم:</label>
+        <select id="userFilter">
+            <option value="">الكل</option>
+        </select>
+    </div>
+    <div class="actions">
+        <button onclick="filterTable()">🔍 بحث</button>
+        <button class="print-btn" onclick="window.print()">🖨️ طباعة</button>
+        <button class="excel-btn" onclick="exportTableToExcel()">📁 تصدير Excel</button>
+    </div>
+</div>
 
-    <label for="userFilter">المستخدم:</label>
-    <select id="userFilter">
-        <option value="">الكل</option>
-    </select>
-
-    <button onclick="filterTable()" style="margin-top:0;">🔍 بحث</button>
-    <button class="print-btn" onclick="window.print()">🖨️ طباعة</button>
-    <button class="excel-btn" onclick="exportTableToExcel('reportsTable')">📁 تصدير Excel</button>
+<div class="toolbar" style="margin-top:12px;">
     <a href="view.html" class="check-btn">🔍 التحقق من النتيجة</a>
     <a href="csv_upload.html" class="confirm-btn">📤 رفع CSV</a>
     <a href="users.html" id="settingsLink" class="settings-btn" style="display:none;">⚙️ الإعدادات</a>
@@ -95,6 +113,8 @@
 <script src="js/config.js"></script>
 <script src="js/api.js"></script>
 <script src="js/whatsapp.js"></script>
+<script src="js/footer.js"></script>
+<script src="js/pwa.js"></script>
 <script>
 const session = requireLogin();
 let reportsData = [];
@@ -229,14 +249,26 @@ function filterTable() {
         row.style.display = show ? '' : 'none';
     });
 }
+['searchInput','fromDate','toDate','userFilter'].forEach(id => {
+    document.getElementById(id).addEventListener('input', filterTable);
+    document.getElementById(id).addEventListener('change', filterTable);
+});
 
-function exportTableToExcel(tableID) {
-    const table = document.getElementById(tableID);
-    const html = table.outerHTML.replace(/ /g, '%20');
-    const a = document.createElement('a');
-    a.href = 'data:application/vnd.ms-excel,' + html;
-    a.download = 'reports.xls';
-    a.click();
+function exportTableToExcel(){
+    const visibleRows = [...document.querySelectorAll('#reportsTable tr')].slice(1)
+        .filter(r => r.style.display !== 'none');
+    const indices = visibleRows.map(r => Array.from(r.parentNode.children).indexOf(r) - 1);
+    const rowsToExport = indices.map(i => reportsData[i]).filter(Boolean);
+    exportArrayToExcel(rowsToExport, [
+        { key: 'passport', label: 'رقم الباسبور' },
+        { key: 'name_ar', label: 'الاسم بالعربي' },
+        { key: 'name_en', label: 'English Name' },
+        { key: 'phone', label: 'رقم التليفون' },
+        { key: 'report_date', label: 'تاريخ التقرير' },
+        { key: 'report_status', label: 'حالة التقرير' },
+        { key: 'added_by', label: 'المستخدم' },
+        { key: 'added_at', label: 'تاريخ ووقت الإضافة' }
+    ], 'reports.xls');
 }
 
 // Idle timer مع تحذير قبل الخروج

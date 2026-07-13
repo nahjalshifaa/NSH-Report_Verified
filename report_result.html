@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>نتيجة البحث</title>
 <link rel="stylesheet" href="css/style.css">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1f7a2e">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
 <link rel="icon" type="image/jpeg" href="img/logo.jpg">
 </head>
 <body>
@@ -25,7 +29,38 @@
 <script src="js/config.js"></script>
 <script src="js/api.js"></script>
 <script src="js/whatsapp.js"></script>
+<script src="js/footer.js"></script>
+<script src="js/pwa.js"></script>
 <script>
+let lastResults = [];
+
+function confettiHtml(){
+    const colors = ['#2e9b39','#4f86b5','#e0863b','#7cbb3f','#ffd166'];
+    let html = '';
+    for (let i = 0; i < 16; i++){
+        const angle = (Math.PI * 2 * i) / 16;
+        const dist = 55 + Math.random() * 35;
+        const dx = Math.cos(angle) * dist;
+        const dy = Math.sin(angle) * dist;
+        const rot = Math.floor(Math.random() * 360);
+        const color = colors[i % colors.length];
+        const delay = (Math.random() * 0.15).toFixed(2);
+        html += `<span class="confetti-piece" style="--dx:${dx}px; --dy:${dy}px; --rot:${rot}deg; background:${color}; animation-delay:${delay}s;"></span>`;
+    }
+    return html;
+}
+
+function exportResultsToExcel(){
+    exportArrayToExcel(lastResults, [
+        { key: 'passport', label: 'رقم الباسبور' },
+        { key: 'name_ar', label: 'الاسم بالعربي' },
+        { key: 'name_en', label: 'English Name' },
+        { key: 'phone', label: 'رقم التليفون' },
+        { key: 'report_date', label: 'تاريخ التقرير' },
+        { key: 'report_status', label: 'حالة التقرير' }
+    ], 'search_results.xls');
+}
+
 async function run(){
     const params = new URLSearchParams(window.location.search);
     const passport = (params.get('passport') || '').trim();
@@ -51,33 +86,45 @@ async function run(){
     // أحدث تقرير أولًا
     results.sort((a,b) => String(b.report_date).localeCompare(String(a.report_date)));
 
-    // نخزن النتائج مؤقتًا عشان صفحة تصدير الإكسل (بديل $_SESSION['exportResults'])
-    sessionStorage.setItem('nsh_export_results', JSON.stringify(results));
+    lastResults = results;
 
     const container = document.getElementById('resultsContainer');
+    const printHeader = `
+        <div class="print-logo-header">
+            <img src="img/logo.jpg" alt="مجمع نهج الشفاء الطبي العام" style="height:40px;">
+            <strong>مجمع نهج الشفاء الطبي العام</strong>
+        </div>`;
     if (results.length > 0) {
-        let html = '<h2>نتائج البحث</h2>';
+        let html = printHeader + '<h2>نتائج البحث</h2>';
         if (results.length > 1) {
             html += `<p style="color:var(--text-muted);font-size:14px;text-align:center;">تم العثور على ${results.length} تقرير مطابق لرقم الباسبور/الإقامة.</p>`;
         }
         results.forEach(report => {
-            const statusClass = report.report_status === 'valid' ? 'valid-stamp' : 'not-valid-stamp';
-            const statusText = report.report_status === 'valid' ? 'Report Valid' : 'Report Invalid';
+            const isValid = report.report_status === 'valid';
+            const iconClass = isValid ? 'is-valid' : 'is-invalid';
+            const statusText = isValid ? 'Report Valid' : 'Report Not Valid';
             html += `
             <div class="report-card">
+                <div class="result-stamp-wrap">
+                    <div class="result-icon-circle ${iconClass}">
+                        ${isValid ? '✔' : '✕'}
+                        ${isValid ? confettiHtml() : ''}
+                    </div>
+                    <div class="result-status-text ${iconClass}">${statusText}</div>
+                </div>
+                <hr style="border:none;border-top:1px solid var(--border);margin:16px 0;">
                 <p><span class="label">رقم الباسبور:</span> ${escapeHtml(report.passport)}</p>
                 <p><span class="label">الاسم عربي:</span> ${escapeHtml(report.name_ar)}</p>
                 <p><span class="label">English Name:</span> ${escapeHtml(report.name_en)}</p>
                 <p><span class="label">رقم التليفون:</span> ${escapeHtml(report.phone)}</p>
                 <p><span class="label">تاريخ التقرير:</span> ${escapeHtml(report.report_date)}</p>
-                <p><span class="stamp-square ${statusClass}">${statusText}</span></p>
             </div>`;
         });
         html += `
         <div class="button-group">
             <button class="search-again" onclick="window.location.href='view.html'">بحث مرة أخرى</button>
-            <button class="print-btn" onclick="window.print()">طباعة</button>
-            <button class="export-btn" onclick="window.location.href='export_excel.html'">تصدير Excel</button>
+            <button class="print-btn" onclick="window.print()">🖨️ طباعة</button>
+            <button class="export-btn" onclick="exportResultsToExcel()">📁 تصدير Excel</button>
         </div>`;
         container.innerHTML = html;
     } else {

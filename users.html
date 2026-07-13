@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>إدارة المستخدمين</title>
 <link rel="stylesheet" href="css/style.css">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1f7a2e">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
 <link rel="icon" type="image/jpeg" href="img/logo.jpg">
 </head>
 <body>
@@ -25,6 +29,11 @@
 <div class="container">
 <h2>إدارة المستخدمين</h2>
 <p id="msg" class="success" style="display:none;"></p>
+
+<h3>📥 طلبات تسجيل الموظفين الجدد</h3>
+<div id="pendingSection">
+    <p class="pending-empty">... جاري تحميل الطلبات</p>
+</div>
 
 <h3>إضافة مستخدم جديد</h3>
 <form id="addUserForm">
@@ -83,10 +92,86 @@
 <script src="js/config.js"></script>
 <script src="js/api.js"></script>
 <script src="js/whatsapp.js"></script>
+<script src="js/footer.js"></script>
+<script src="js/pwa.js"></script>
 <script>
 const session = requireAdmin();
 let usersData = [];
+let pendingData = [];
 let deleteUsername = '';
+
+function renderPending(){
+    const section = document.getElementById('pendingSection');
+    if (!pendingData.length) {
+        section.innerHTML = '<p class="pending-empty">لا توجد طلبات تسجيل جديدة حاليًا.</p>';
+        return;
+    }
+    section.innerHTML = pendingData.map((p, index) => `
+        <div class="pending-card">
+            <div class="pending-row">
+                <div class="pending-info">
+                    <strong>${escapeHtml(p.full_name)}</strong> (${escapeHtml(p.username)})<br>
+                    📞 ${escapeHtml(p.phone)} &nbsp;|&nbsp; 🆔 ${escapeHtml(p.employee_id)} &nbsp;|&nbsp; ✉️ ${escapeHtml(p.email)}<br>
+                    <span style="color:var(--text-muted);font-size:12px;">طلب بتاريخ: ${escapeHtml(p.requested_at || '-')}</span>
+                </div>
+                <div class="pending-actions">
+                    <button type="button" class="approve-btn" onclick="approvePending(${index})">✅ موافقة</button>
+                    <button type="button" class="reject-btn" onclick="rejectPending(${index})">✖ رفض</button>
+                </div>
+            </div>
+        </div>`).join('');
+}
+
+async function loadPending(){
+    pendingData = await sheetsGetPending();
+    renderPending();
+}
+
+async function approvePending(index){
+    const p = pendingData[index];
+    if (!p) return;
+    if (usersData.some(u => u.username === p.username)) {
+        showMsg('⚠️ اسم المستخدم موجود بالفعل في قائمة المستخدمين، احذف الطلب المكرر.');
+        return;
+    }
+    const backupUsers = usersData.slice();
+    usersData.push({
+        username: p.username, full_name: p.full_name, password: p.password, role: 'user',
+        status: 'active', idle_time: 30, warning_time: 5,
+        phone: p.phone, employee_id: p.employee_id, email: p.email
+    });
+    const okUsers = await sheetsSaveUsers(usersData);
+    if (!okUsers) {
+        usersData = backupUsers;
+        showMsg('⚠️ حصل خطأ أثناء إضافة المستخدم، جرّب تاني.');
+        return;
+    }
+    const backupPending = pendingData.slice();
+    pendingData.splice(index, 1);
+    const okPending = await sheetsSavePending(pendingData);
+    if (!okPending) {
+        pendingData = backupPending;
+        showMsg('⚠️ تمت إضافة المستخدم لكن حصل خطأ في تحديث قائمة الطلبات، احذف الطلب يدويًا.');
+    } else {
+        showMsg(`✅ تم قبول طلب "${p.full_name}" وأصبح بإمكانه تسجيل الدخول.`);
+    }
+    renderUsers();
+    renderPending();
+}
+
+async function rejectPending(index){
+    if (!confirm('هل أنت متأكد من رفض طلب التسجيل ده؟')) return;
+    const backup = pendingData.slice();
+    pendingData.splice(index, 1);
+    const ok = await sheetsSavePending(pendingData);
+    if (!ok) {
+        pendingData = backup;
+        showMsg('⚠️ حصل خطأ أثناء رفض الطلب، جرّب تاني.');
+    } else {
+        showMsg('✅ تم رفض طلب التسجيل.');
+    }
+    renderPending();
+}
 
 async function loadWaSettings(){
     const settings = await sheetsGetSettings();
@@ -229,6 +314,7 @@ document.getElementById('confirmDeleteBtn').addEventListener('click', async func
 });
 
 loadUsers();
+loadPending();
 </script>
 
 </body>

@@ -72,6 +72,10 @@ async function sheetsSaveSettings(settingsObj) {
     return sheetsSave('settings', [settingsObj]);
 }
 
+// ------- طلبات تسجيل الموظفين الجدد (بانتظار موافقة الأدمن) -------
+async function sheetsGetPending() { return sheetsGet('pending_users'); }
+async function sheetsSavePending(rows) { return sheetsSave('pending_users', rows); }
+
 // ============================================================
 // إدارة "الجلسة" (بديل session_start في PHP) — تُخزَّن في sessionStorage
 // ============================================================
@@ -127,4 +131,47 @@ function escapeHtml(str) {
     const div = document.createElement('div');
     div.textContent = str ?? '';
     return div.innerHTML;
+}
+
+// ============================================================
+// إشعار عائم صغير (Toast) بدل ما نفتح صفحة جديدة أو نستخدم alert()
+// ============================================================
+let toastTimer = null;
+function showToast(message, isError) {
+    let el = document.getElementById('nshToast');
+    if (!el) {
+        el = document.createElement('div');
+        el.id = 'nshToast';
+        el.className = 'toast';
+        document.body.appendChild(el);
+    }
+    el.textContent = message;
+    el.className = 'toast show' + (isError ? ' toast-error' : '');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { el.classList.remove('show'); }, 3200);
+}
+
+// ============================================================
+// تصدير أي مصفوفة بيانات (array of objects) إلى ملف Excel (.xls) مباشرة
+// من غير ما نفتح صفحة جديدة — بيبدأ التحميل فورًا ويظهر تنبيه بسيط
+// ============================================================
+function exportArrayToExcel(rows, columns, filename) {
+    if (!rows || !rows.length) {
+        showToast('⚠️ لا توجد بيانات لتصديرها.', true);
+        return;
+    }
+    let html = '<table border="1"><tr>' + columns.map(c => `<th>${escapeHtml(c.label)}</th>`).join('') + '</tr>';
+    rows.forEach(r => {
+        html += '<tr>' + columns.map(c => `<td>${escapeHtml(r[c.key])}</td>`).join('') + '</tr>';
+    });
+    html += '</table>';
+
+    const blob = new Blob(['\ufeff' + html], { type: 'application/vnd.ms-excel;charset=utf-8' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = filename || 'export.xls';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    showToast('✅ تم استخراج الملف بنجاح.');
 }
