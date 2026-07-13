@@ -215,12 +215,14 @@ document.getElementById('waSettingsForm').addEventListener('submit', async funct
     const ok = await sheetsSaveSettings(settingsData);
     if (ok) {
         waMsgEl.textContent = '✅ تم حفظ إعدادات واتساب بنجاح!';
+        waMsgEl.className = 'success';
         waMsgEl.style.display = 'block';
     } else {
-        waMsgEl.textContent = '⚠️ حصل خطأ أثناء الحفظ، تأكد من رابط ومفتاح Google Apps Script في js/config.js وحاول تاني.';
+        waMsgEl.textContent = '⚠️ حصل خطأ أثناء الحفظ. الأسباب الشائعة: (1) لسه معملتش "New deployment" في Apps Script بعد آخر تحديث لـ Code.gs، (2) رابط أو مفتاح API غلط في js/config.js. افتح Console (F12) للتفاصيل.';
+        waMsgEl.className = 'error';
         waMsgEl.style.display = 'block';
     }
-    setTimeout(() => { waMsgEl.style.display = 'none'; }, 4000);
+    setTimeout(() => { waMsgEl.style.display = 'none'; }, 7000);
 });
 
 document.getElementById('copyrightSettingsForm').addEventListener('submit', async function(e){
@@ -241,12 +243,14 @@ document.getElementById('copyrightSettingsForm').addEventListener('submit', asyn
     const ok = await sheetsSaveSettings(settingsData);
     if (ok) {
         copyrightMsgEl.textContent = '✅ تم حفظ بيانات الفوتر بنجاح!';
+        copyrightMsgEl.className = 'success';
         copyrightMsgEl.style.display = 'block';
     } else {
-        copyrightMsgEl.textContent = '⚠️ حصل خطأ أثناء الحفظ، تأكد من رابط ومفتاح Google Apps Script في js/config.js وحاول تاني.';
+        copyrightMsgEl.textContent = '⚠️ حصل خطأ أثناء الحفظ. الأسباب الشائعة: (1) لسه معملتش "New deployment" في Apps Script بعد آخر تحديث لـ Code.gs، (2) رابط أو مفتاح API غلط في js/config.js. افتح Console (F12) للتفاصيل.';
+        copyrightMsgEl.className = 'error';
         copyrightMsgEl.style.display = 'block';
     }
-    setTimeout(() => { copyrightMsgEl.style.display = 'none'; }, 4000);
+    setTimeout(() => { copyrightMsgEl.style.display = 'none'; }, 7000);
 });
 
 loadWaSettings();

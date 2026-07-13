@@ -1,6 +1,13 @@
 // ============================================================
 // تسجيل الـ Service Worker + زرار "تثبيت التطبيق" على الموبايل/الكمبيوتر
 // ============================================================
+//
+// ⚠️ ملحوظة مهمة: حدث beforeinstallprompt (اللي بيسمح بزرار تثبيت تلقائي حقيقي)
+// **مش مدعوم خالص** في Safari على آيفون/آيباد، ولا في متصفحات كتير على أندرويد
+// (Firefox، Samsung Internet أحيانًا، ومتصفحات التطبيقات المدمجة زي واتساب/فيسبوك).
+// لو اعتمدنا عليه بس، الزرار مش هيظهر خالص في الحالات دي — وده سبب المشكلة.
+// الحل: نكتشف الحالة ونعرض زرار "تثبيت" بيفتح تعليمات مناسبة للمتصفح لو الحدث مش هيشتغل.
+// ============================================================
 
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
@@ -14,10 +21,24 @@ if ('serviceWorker' in navigator) {
 
 let deferredInstallPrompt = null;
 
+// هل التطبيق شغال بالفعل كتطبيق مثبّت (مش داخل تاب المتصفح العادي)؟
+function isRunningStandalone() {
+    return window.matchMedia('(display-mode: standalone)').matches
+        || window.navigator.standalone === true; // iOS Safari القديم
+}
+
+function detectPlatform() {
+    const ua = navigator.userAgent || '';
+    const isIOS = /iPad|iPhone|iPod/.test(ua) || (ua.includes('Macintosh') && navigator.maxTouchPoints > 1);
+    const isAndroid = /Android/.test(ua);
+    const isSafari = /^((?!chrome|android).)*safari/i.test(ua);
+    return { isIOS, isAndroid, isSafari };
+}
+
 window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredInstallPrompt = e;
-    showInstallButton();
+    showInstallButton('auto');
 });
 
 window.addEventListener('appinstalled', () => {
@@ -25,27 +46,32 @@ window.addEventListener('appinstalled', () => {
     hideInstallButton();
 });
 
-async function handleInstallClick() {
-    if (!deferredInstallPrompt) return;
-    deferredInstallPrompt.prompt();
-    await deferredInstallPrompt.userChoice;
-    deferredInstallPrompt = null;
-    hideInstallButton();
+async function handleInstallClick(mode) {
+    if (mode === 'auto' && deferredInstallPrompt) {
+        deferredInstallPrompt.prompt();
+        await deferredInstallPrompt.userChoice;
+        deferredInstallPrompt = null;
+        hideInstallButton();
+        return;
+    }
+    // مفيش حدث تلقائي متاح (آيفون أو متصفح مش بيدعم beforeinstallprompt) -> نوريه التعليمات يدويًا
+    showInstallInstructions();
 }
 
 // نفس تصميم زرار الواتساب بالظبط: شريط نص + دائرة أيقونة، بس على الجنب التاني من الشاشة
-function showInstallButton() {
+function showInstallButton(mode) {
     if (document.getElementById('pwaInstallWidget')) return;
 
     const wrapper = document.createElement('div');
     wrapper.id = 'pwaInstallWidget';
     wrapper.className = 'pwa-widget';
+    wrapper.dataset.mode = mode;
     wrapper.innerHTML = `
         <a href="#" class="pwa-install-pill">⬇️ تثبيت التطبيق</a>
         <button type="button" class="pwa-install-circle" aria-label="تثبيت التطبيق">⬇️</button>
     `;
     wrapper.querySelectorAll('.pwa-install-pill, .pwa-install-circle').forEach(el => {
-        el.addEventListener('click', (e) => { e.preventDefault(); handleInstallClick(); });
+        el.addEventListener('click', (e) => { e.preventDefault(); handleInstallClick(wrapper.dataset.mode); });
     });
     document.body.appendChild(wrapper);
 }
@@ -54,3 +80,72 @@ function hideInstallButton() {
     const el = document.getElementById('pwaInstallWidget');
     if (el) el.remove();
 }
+
+// تعليمات التثبيت اليدوي لما مفيش زرار تلقائي مدعوم (آيفون بالذات)
+function showInstallInstructions() {
+    if (document.getElementById('pwaInstructionsModal')) return;
+    const { isIOS, isSafari, isAndroid } = detectPlatform();
+
+    let steps;
+    if (isIOS) {
+        steps = `
+            <ol style="text-align:right; padding-inline-start:20px; line-height:2;">
+                <li>دوس على زرار <strong>المشاركة</strong> ⬆️ (المربع وفيه سهم للأعلى) في شريط المتصفح.</li>
+                <li>مرّر لتحت واختار <strong>"إضافة إلى الشاشة الرئيسية"</strong> (Add to Home Screen).</li>
+                <li>دوس <strong>إضافة</strong> في أعلى الشاشة.</li>
+            </ol>
+            ${isSafari ? '' : '<p style="color:var(--text-muted); font-size:13px;">⚠️ على آيفون، الإضافة للشاشة الرئيسية بتشتغل من Safari بس — لو بتفتح الموقع من متصفح تاني، افتحه بـ Safari الأول.</p>'}
+        `;
+    } else if (isAndroid) {
+        steps = `
+            <ol style="text-align:right; padding-inline-start:20px; line-height:2;">
+                <li>دوس على أيقونة <strong>القائمة</strong> ⋮ في أعلى المتصفح.</li>
+                <li>اختار <strong>"تثبيت التطبيق"</strong> أو <strong>"إضافة إلى الشاشة الرئيسية"</strong>.</li>
+            </ol>
+        `;
+    } else {
+        steps = `
+            <ol style="text-align:right; padding-inline-start:20px; line-height:2;">
+                <li>دوس على أيقونة <strong>التثبيت</strong> ⊕ في شريط عنوان المتصفح (يمين خانة الرابط غالبًا).</li>
+                <li>أو من قائمة المتصفح اختار <strong>"تثبيت..."</strong> / <strong>Install</strong>.</li>
+            </ol>
+        `;
+    }
+
+    const modal = document.createElement('div');
+    modal.id = 'pwaInstructionsModal';
+    modal.className = 'modal';
+    modal.style.display = 'block';
+    modal.innerHTML = `
+        <div class="modal-content" style="width:320px; text-align:center;">
+            <p style="font-weight:700; margin-bottom:10px;">📲 تثبيت التطبيق</p>
+            ${steps}
+            <button type="button" id="pwaInstructionsCloseBtn">تمام</button>
+        </div>`;
+    document.body.appendChild(modal);
+    const close = () => modal.remove();
+    modal.addEventListener('click', (e) => { if (e.target === modal) close(); });
+    modal.querySelector('#pwaInstructionsCloseBtn').addEventListener('click', close);
+}
+
+// نشغّل المنطق بعد تحميل الصفحة عشان نتأكد إن body جاهز لإضافة الزرار
+document.addEventListener('DOMContentLoaded', () => {
+    if (isRunningStandalone()) return; // متثبت بالفعل، مفيش داعي للزرار
+
+    const { isIOS } = detectPlatform();
+
+    if (isIOS) {
+        // آيفون: مفيش beforeinstallprompt خالص، فنعرض الزرار على طول وهو بيفتح التعليمات اليدوية
+        showInstallButton('manual');
+        return;
+    }
+
+    // غير آيفون: ننتظر شوية لو beforeinstallprompt هيشتغل (Chrome/Edge على أندرويد وويندوز).
+    // لو مرت 3 ثواني ومفيش حدث، يبقى المتصفح مش بيدعمه (Firefox، متصفح تطبيقات مدمج...)
+    // فنوريه زرار بردو بس بيفتح تعليمات يدوية عامة بدل ما يختفي تمامًا.
+    setTimeout(() => {
+        if (!deferredInstallPrompt && !document.getElementById('pwaInstallWidget')) {
+            showInstallButton('manual');
+        }
+    }, 3000);
+});
