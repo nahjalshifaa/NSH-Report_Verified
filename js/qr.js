@@ -36,6 +36,10 @@ function normalizePhoneForWhatsApp(rawPhone) {
 
 // يرسم QR جوه أي canvas element، ويرجع true/false لو نجح
 async function drawQrOnCanvas(canvas, text) {
+    if (typeof QRCode === 'undefined') {
+        console.error('QR generation error: مكتبة QRCode لم يتم تحميلها (تأكد من الاتصال بالإنترنت).');
+        return false;
+    }
     try {
         await QRCode.toCanvas(canvas, text, {
             width: 260,
@@ -65,7 +69,7 @@ async function showReportQr(report) {
 
     const ok = await drawQrOnCanvas(canvas, link);
     if (!ok) {
-        showToast('⚠️ حصل خطأ أثناء توليد كود الـ QR.', true);
+        showToast('⚠️ حصل خطأ أثناء توليد كود الـ QR. تأكد من اتصال الجهاز بالإنترنت وحاول تاني.', true);
         return;
     }
 
