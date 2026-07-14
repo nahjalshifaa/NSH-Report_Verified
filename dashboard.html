@@ -101,6 +101,7 @@
 <th>حالة التقرير</th>
 <th>المستخدم</th>
 <th>تاريخ ووقت الإضافة</th>
+<th>روابط التحقق (QR / واتساب)</th>
 <th>حذف</th>
 </tr>
 </table>
@@ -110,9 +111,30 @@
 
 <p id="timer">الوقت المتبقي قبل تسجيل الخروج التلقائي: <span id="timeDisplay"></span></p>
 
+<div id="qrModal" class="modal">
+<div class="modal-content" style="width:340px;">
+<h3 style="margin-top:0;">QR التحقق من التقرير</h3>
+<p id="qrPersonName" style="font-weight:700;color:var(--text-muted);margin:-6px 0 10px;"></p>
+<canvas id="qrCanvas"></canvas>
+<p style="font-size:12px;color:var(--text-muted);word-break:break-all;margin-top:10px;">
+    <a id="qrLinkText" href="#" target="_blank" rel="noopener" style="color:var(--blue-dark);"></a>
+</p>
+<div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-top:8px;">
+    <button class="download-btn" onclick="downloadQrCanvas()">⬇️ تنزيل الصورة</button>
+    <button class="excel-btn" onclick="copyQrLink()">🔗 نسخ الرابط</button>
+    <button onclick="closeQrModal()">إغلاق</button>
+</div>
+<p style="font-size:11.5px;color:var(--text-muted);margin-top:10px;">
+    امسح الكود بكاميرا الموبايل عشان تفتح صفحة نتيجة التقرير مباشرة أونلاين، من غير ما تدخل بيانات يدويًا.
+</p>
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 <script src="js/config.js"></script>
 <script src="js/api.js"></script>
 <script src="js/whatsapp.js"></script>
+<script src="js/qr.js"></script>
 <script src="js/footer.js"></script>
 <script src="js/pwa.js"></script>
 <script>
@@ -144,7 +166,8 @@ function renderTable(){
     let html = `<tr>
         <th>رقم الباسبور</th><th>الاسم بالعربي</th><th>English Name</th>
         <th>رقم التليفون</th><th>تاريخ التقرير</th><th>حالة التقرير</th>
-        <th>المستخدم</th><th>تاريخ ووقت الإضافة</th><th>حذف</th></tr>`;
+        <th>المستخدم</th><th>تاريخ ووقت الإضافة</th>
+        <th>روابط التحقق (QR / واتساب)</th><th>حذف</th></tr>`;
 
     reportsData.forEach((report, index) => {
         const rowClass = duplicateIndex === index ? "class='duplicate-row'" : '';
@@ -162,6 +185,12 @@ function renderTable(){
             <td><span class="badge ${statusClass}">${statusLabel}</span></td>
             <td>${escapeHtml(report.added_by || '-')}</td>
             <td>${escapeHtml(report.added_at || '-')}</td>
+            <td>
+                <div class="action-icons">
+                    <button type="button" class="icon-action-btn qr-action-btn" title="عرض QR للعميل (فتح مباشر للنتيجة)" onclick="showReportQr(reportsData[${index}])">📱</button>
+                    <button type="button" class="icon-action-btn wa-action-btn" title="إرسال التقرير عبر واتساب" onclick="sendReportViaWhatsApp(reportsData[${index}])">💬</button>
+                </div>
+            </td>
             <td>${delCell}</td>
         </tr>`;
     });

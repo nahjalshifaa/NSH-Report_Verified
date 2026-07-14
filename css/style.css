@@ -566,6 +566,30 @@ tbody tr:nth-child(even){ background: #fbfdfb; }
     100%{ transform: scale(1) rotate(0); }
 }
 
+/* ---------- Per-row action icons (QR verify / WhatsApp send) ---------- */
+.action-icons{ display:flex; gap:6px; justify-content:center; flex-wrap:wrap; }
+.icon-action-btn{
+    min-height: 34px;
+    width: 34px;
+    padding: 0;
+    margin-top: 0;
+    border-radius: 50%;
+    border: none;
+    font-size: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background .2s, transform .1s;
+}
+.icon-action-btn:active{ transform: translateY(1px); }
+.qr-action-btn{ background: var(--blue); color: #fff; }
+.qr-action-btn:hover{ background: var(--blue-dark); }
+.wa-action-btn{ background: #25D366; color: #fff; }
+.wa-action-btn:hover{ background: #1ea952; }
+
+#qrCanvas{ display:block; margin: 0 auto; border-radius: var(--radius-sm); }
+
 .confetti-piece{
     position: absolute; top: 50%; left: 50%; width: 7px; height: 12px;
     opacity: 0; border-radius: 2px;
