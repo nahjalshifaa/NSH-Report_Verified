@@ -2,6 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
+<script>(function(){var l=localStorage.getItem('nsh_lang')||'ar';document.documentElement.lang=l;document.documentElement.dir=(l==='ar'?'rtl':'ltr');})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>رفع ملف CSV</title>
 <link rel="stylesheet" href="css/style.css">
@@ -11,51 +12,52 @@
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
 <link rel="icon" type="image/jpeg" href="img/logo.jpg">
 </head>
-<body>
+<body data-i18n-doctitle="csv.title">
 
 <header class="site-header">
     <img src="img/logo.jpg" alt="مجمع نهج الشفاء الطبي العام" class="logo-img">
     <div class="brand-text">
-        <strong>مجمع نهج الشفاء الطبي العام</strong>
-        <span>رفع بيانات التقارير</span>
+        <strong data-i18n="common.orgName">مجمع نهج الشفاء الطبي العام</strong>
+        <span data-i18n="csv.subtitle">رفع بيانات التقارير</span>
     </div>
     <div class="header-spacer"></div>
     <div class="header-actions">
-        <a href="#" class="logout-btn" onclick="logout(); return false;">⎋ تسجيل الخروج</a>
+        <a href="#" class="logout-btn" onclick="logout(); return false;" data-i18n="nav.logout">⎋ تسجيل الخروج</a>
     </div>
 </header>
 
 <div class="container">
-<h2>رفع ملف CSV وإضافة البيانات</h2>
+<h2 data-i18n="csv.title">رفع ملف CSV وإضافة البيانات</h2>
 
 <p id="successMsg" class="success" style="display:none;"></p>
 
-<a href="csv_example.csv" class="download-btn" download>📥 تحميل نموذج CSV</a>
+<a href="csv_example.csv" class="download-btn" download data-i18n="csv.downloadTemplate">📥 تحميل نموذج CSV</a>
 
 <form id="uploadForm" style="margin-top:15px;">
     <input type="file" id="csv_file" accept=".csv" required>
-    <button type="submit" class="confirm-btn">رفع الملف</button>
+    <button type="submit" class="confirm-btn" data-i18n="csv.uploadBtn">رفع الملف</button>
 </form>
 
 <div id="previewSection" style="display:none;">
-<h3>معاينة البيانات قبل الإضافة</h3>
+<h3 data-i18n="csv.previewTitle">معاينة البيانات قبل الإضافة</h3>
 <div class="table-wrap">
 <table id="previewTable">
 <tr>
-<th>رقم الباسبور</th><th>الاسم بالعربي</th><th>English Name</th>
-<th>رقم التليفون</th><th>تاريخ التقرير</th><th>حالة التقرير</th><th>حذف</th>
+<th data-i18n="th.passport">رقم الباسبور</th><th data-i18n="th.nameAr">الاسم بالعربي</th><th data-i18n="th.nameEn">English Name</th>
+<th data-i18n="th.phone">رقم التليفون</th><th data-i18n="th.reportDate">تاريخ التقرير</th><th data-i18n="th.status">حالة التقرير</th><th data-i18n="th.delete">حذف</th>
 </tr>
 </table>
 </div>
 
-<button id="confirmUploadBtn" class="confirm-btn">✅ تأكيد إضافة البيانات</button>
+<button id="confirmUploadBtn" class="confirm-btn" data-i18n="csv.confirmBtn">✅ تأكيد إضافة البيانات</button>
 </div>
 
 <br><br>
-<a href="dashboard.html" class="back-btn">⬅ العودة للداش بورد</a>
+<a href="dashboard.html" class="back-btn" data-i18n="nav.backDashboard">⬅ العودة للداش بورد</a>
 </div>
 
 <script src="js/config.js"></script>
+<script src="js/i18n.js"></script>
 <script src="js/api.js"></script>
 <script src="js/whatsapp.js"></script>
 <script src="js/footer.js"></script>
@@ -87,8 +89,8 @@ function renderPreview(){
     }
     section.style.display = 'block';
     const table = document.getElementById('previewTable');
-    let html = `<tr><th>رقم الباسبور</th><th>الاسم بالعربي</th><th>English Name</th>
-        <th>رقم التليفون</th><th>تاريخ التقرير</th><th>حالة التقرير</th><th>حذف</th></tr>`;
+    let html = `<tr><th>${t('th.passport')}</th><th>${t('th.nameAr')}</th><th>${t('th.nameEn')}</th>
+        <th>${t('th.phone')}</th><th>${t('th.reportDate')}</th><th>${t('th.status')}</th><th>${t('th.delete')}</th></tr>`;
     csvData.forEach((row, index) => {
         html += `<tr>
             <td>${escapeHtml(row.passport)}</td>
@@ -97,14 +99,14 @@ function renderPreview(){
             <td>${escapeHtml(row.phone)}</td>
             <td>${escapeHtml(row.report_date)}</td>
             <td>${escapeHtml(row.report_status)}</td>
-            <td><a href="#" class="delete-btn" style="text-decoration:none;padding:4px 8px;" onclick="deleteCsvRow(${index}); return false;">حذف</a></td>
+            <td><a href="#" class="delete-btn" style="text-decoration:none;padding:4px 8px;" onclick="deleteCsvRow(${index}); return false;">${t('th.delete')}</a></td>
         </tr>`;
     });
     table.innerHTML = html;
 }
 
 function deleteCsvRow(index){
-    if (!confirm('هل أنت متأكد من حذف هذا السطر؟')) return;
+    if (!confirm(t('csv.confirmDeleteRow'))) return;
     csvData.splice(index, 1);
     sessionStorage.setItem('nsh_csv_data', JSON.stringify(csvData));
     renderPreview();
@@ -133,7 +135,7 @@ document.getElementById('uploadForm').addEventListener('submit', function(e){
         });
         sessionStorage.setItem('nsh_csv_data', JSON.stringify(csvData));
         renderPreview();
-        showToast(`✅ تم استخراج الملف بنجاح (${csvData.length} سطر). راجع البيانات بالأسفل ثم اضغط "تأكيد إضافة البيانات".`);
+        showToast(t('csv.extractSuccess', { n: csvData.length }));
     };
     reader.readAsText(file, 'UTF-8');
 });
@@ -147,16 +149,17 @@ document.getElementById('confirmUploadBtn').addEventListener('click', async func
         csvData = [];
         sessionStorage.removeItem('nsh_csv_data');
         renderPreview();
-        el.textContent = '✅ تم إضافة جميع البيانات بنجاح!';
+        el.textContent = t('csv.addSuccess');
         el.className = 'success';
     } else {
-        el.textContent = '⚠️ حصل خطأ أثناء الحفظ في الشيت، لم تتم إضافة البيانات. تأكد من رابط ومفتاح Google Apps Script وحاول تاني.';
+        el.textContent = t('csv.addFailed');
         el.className = 'error';
     }
     el.style.display = 'block';
 });
 
 renderPreview();
+window.addEventListener('nsh:langchange', renderPreview);
 </script>
 
 </body>

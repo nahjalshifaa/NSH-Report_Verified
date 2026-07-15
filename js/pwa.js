@@ -67,8 +67,8 @@ function showInstallButton(mode) {
     wrapper.className = 'pwa-widget';
     wrapper.dataset.mode = mode;
     wrapper.innerHTML = `
-        <a href="#" class="pwa-install-pill">⬇️ تثبيت التطبيق</a>
-        <button type="button" class="pwa-install-circle" aria-label="تثبيت التطبيق">⬇️</button>
+        <a href="#" class="pwa-install-pill" data-i18n="pwa.installPill">${t('pwa.installPill')}</a>
+        <button type="button" class="pwa-install-circle" aria-label="${t('pwa.installAria')}" data-i18n-aria="pwa.installAria">⬇️</button>
     `;
     wrapper.querySelectorAll('.pwa-install-pill, .pwa-install-circle').forEach(el => {
         el.addEventListener('click', (e) => { e.preventDefault(); handleInstallClick(wrapper.dataset.mode); });
@@ -88,28 +88,11 @@ function showInstallInstructions() {
 
     let steps;
     if (isIOS) {
-        steps = `
-            <ol style="text-align:right; padding-inline-start:20px; line-height:2;">
-                <li>دوس على زرار <strong>المشاركة</strong> ⬆️ (المربع وفيه سهم للأعلى) في شريط المتصفح.</li>
-                <li>مرّر لتحت واختار <strong>"إضافة إلى الشاشة الرئيسية"</strong> (Add to Home Screen).</li>
-                <li>دوس <strong>إضافة</strong> في أعلى الشاشة.</li>
-            </ol>
-            ${isSafari ? '' : '<p style="color:var(--text-muted); font-size:13px;">⚠️ على آيفون، الإضافة للشاشة الرئيسية بتشتغل من Safari بس — لو بتفتح الموقع من متصفح تاني، افتحه بـ Safari الأول.</p>'}
-        `;
+        steps = `${t('pwa.iosSteps')}${isSafari ? '' : `<p style="color:var(--text-muted); font-size:13px;">${t('pwa.iosSafariNote')}</p>`}`;
     } else if (isAndroid) {
-        steps = `
-            <ol style="text-align:right; padding-inline-start:20px; line-height:2;">
-                <li>دوس على أيقونة <strong>القائمة</strong> ⋮ في أعلى المتصفح.</li>
-                <li>اختار <strong>"تثبيت التطبيق"</strong> أو <strong>"إضافة إلى الشاشة الرئيسية"</strong>.</li>
-            </ol>
-        `;
+        steps = t('pwa.androidSteps');
     } else {
-        steps = `
-            <ol style="text-align:right; padding-inline-start:20px; line-height:2;">
-                <li>دوس على أيقونة <strong>التثبيت</strong> ⊕ في شريط عنوان المتصفح (يمين خانة الرابط غالبًا).</li>
-                <li>أو من قائمة المتصفح اختار <strong>"تثبيت..."</strong> / <strong>Install</strong>.</li>
-            </ol>
-        `;
+        steps = t('pwa.desktopSteps');
     }
 
     const modal = document.createElement('div');
@@ -118,9 +101,9 @@ function showInstallInstructions() {
     modal.style.display = 'block';
     modal.innerHTML = `
         <div class="modal-content" style="width:320px; text-align:center;">
-            <p style="font-weight:700; margin-bottom:10px;">📲 تثبيت التطبيق</p>
+            <p style="font-weight:700; margin-bottom:10px;">${t('pwa.installTitle')}</p>
             ${steps}
-            <button type="button" id="pwaInstructionsCloseBtn">تمام</button>
+            <button type="button" id="pwaInstructionsCloseBtn">${t('pwa.ok')}</button>
         </div>`;
     document.body.appendChild(modal);
     const close = () => modal.remove();

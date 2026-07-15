@@ -2,6 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
+<script>(function(){var l=localStorage.getItem('nsh_lang')||'ar';document.documentElement.lang=l;document.documentElement.dir=(l==='ar'?'rtl':'ltr');})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>لوحة التحكم</title>
 <link rel="stylesheet" href="css/style.css">
@@ -11,120 +12,120 @@
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
 <link rel="icon" type="image/jpeg" href="img/logo.jpg">
 </head>
-<body>
+<body data-i18n-doctitle="dashboard.addReportTitle">
 
 <header class="site-header">
     <img src="img/logo.jpg" alt="مجمع نهج الشفاء الطبي العام" class="logo-img">
     <div class="brand-text">
-        <strong>مجمع نهج الشفاء الطبي العام</strong>
-        <span>لوحة إدارة التقارير</span>
+        <strong data-i18n="common.orgName">مجمع نهج الشفاء الطبي العام</strong>
+        <span data-i18n="dashboard.subtitle">لوحة إدارة التقارير</span>
     </div>
     <div class="header-spacer"></div>
     <div class="header-actions">
-        <a href="analytics.html" class="analytics-btn">📊 الداشبورد التحليلي</a>
-        <a href="#" class="logout-btn" onclick="logout(); return false;">⎋ تسجيل الخروج</a>
+        <a href="analytics.html" class="analytics-btn" data-i18n="nav.analyticsDashboard">📊 الداشبورد التحليلي</a>
+        <a href="#" class="logout-btn" onclick="logout(); return false;" data-i18n="nav.logout">⎋ تسجيل الخروج</a>
     </div>
 </header>
 
 <div class="container">
-<h2>إضافة تقرير جديد</h2>
-<p class="user-badge">المستخدم الحالي: <strong id="currentUserLabel"></strong></p>
+<h2 data-i18n="dashboard.addReportTitle">إضافة تقرير جديد</h2>
+<p class="user-badge"><span data-i18n="dashboard.currentUser">المستخدم الحالي:</span> <strong id="currentUserLabel"></strong></p>
 
 <p id="errorMsg" class="error" style="display:none;"></p>
 
 <form id="reportForm">
-<label>رقم الباسبور أو الإقامة:</label>
+<label data-i18n="dashboard.passportLabel">رقم الباسبور أو الإقامة:</label>
 <input type="text" id="passport" required>
 
-<label>الاسم بالعربي:</label>
+<label data-i18n="dashboard.nameArLabel">الاسم بالعربي:</label>
 <input type="text" id="name_ar" required>
 
-<label>English Name:</label>
+<label data-i18n="dashboard.nameEnLabel">English Name:</label>
 <input type="text" id="name_en" required>
 
-<label>رقم التليفون:</label>
+<label data-i18n="dashboard.phoneLabel">رقم التليفون:</label>
 <input type="text" id="phone" required>
 
-<label>تاريخ التقرير:</label>
+<label data-i18n="dashboard.dateLabel">تاريخ التقرير:</label>
 <input type="date" id="report_date" required>
 
-<label>حالة التقرير:</label>
+<label data-i18n="dashboard.statusLabel">حالة التقرير:</label>
 <select id="report_status" required>
     <option value="valid">Valid</option>
     <option value="not valid">Not Valid</option>
 </select>
 
-<button type="submit">إضافة التقرير</button>
+<button type="submit" data-i18n="dashboard.submit">إضافة التقرير</button>
 </form>
 
 <div class="toolbar dash-toolbar">
     <div class="field">
-        <label for="searchInput">🔍 بحث (اسم / باسبور / تليفون)</label>
-        <input type="text" id="searchInput" placeholder="ابحث برقم الباسبور أو التليفون أو الاسم...">
+        <label for="searchInput" data-i18n="dashboard.searchLabel">🔍 بحث (اسم / باسبور / تليفون)</label>
+        <input type="text" id="searchInput" placeholder="ابحث برقم الباسبور أو التليفون أو الاسم..." data-i18n-ph="dashboard.searchPlaceholder">
     </div>
     <div class="field">
-        <label for="fromDate">من تاريخ:</label>
+        <label for="fromDate" data-i18n="dashboard.fromDate">من تاريخ:</label>
         <input type="date" id="fromDate">
     </div>
     <div class="field">
-        <label for="toDate">إلى تاريخ:</label>
+        <label for="toDate" data-i18n="dashboard.toDate">إلى تاريخ:</label>
         <input type="date" id="toDate">
     </div>
     <div class="field">
-        <label for="userFilter">المستخدم:</label>
+        <label for="userFilter" data-i18n="dashboard.userFilterLabel">المستخدم:</label>
         <select id="userFilter">
-            <option value="">الكل</option>
+            <option value="" data-i18n="dashboard.all">الكل</option>
         </select>
     </div>
     <div class="actions">
-        <button onclick="filterTable()">🔍 بحث</button>
-        <button class="print-btn" onclick="window.print()">🖨️ طباعة</button>
-        <button class="excel-btn" onclick="exportTableToExcel()">📁 تصدير Excel</button>
+        <button onclick="filterTable()" data-i18n="dashboard.searchBtn">🔍 بحث</button>
+        <button class="print-btn" onclick="window.print()" data-i18n="dashboard.printBtn">🖨️ طباعة</button>
+        <button class="excel-btn" onclick="exportTableToExcel()" data-i18n="dashboard.exportExcel">📁 تصدير Excel</button>
     </div>
 </div>
 
 <div class="toolbar" style="margin-top:12px;">
-    <a href="view.html" class="check-btn">🔍 التحقق من النتيجة</a>
-    <a href="csv_upload.html" class="confirm-btn">📤 رفع CSV</a>
-    <a href="users.html" id="settingsLink" class="settings-btn" style="display:none;">⚙️ الإعدادات</a>
+    <a href="view.html" class="check-btn" data-i18n="dashboard.checkResult">🔍 التحقق من النتيجة</a>
+    <a href="csv_upload.html" class="confirm-btn" data-i18n="dashboard.uploadCsv">📤 رفع CSV</a>
+    <a href="users.html" id="settingsLink" class="settings-btn" style="display:none;" data-i18n="dashboard.settings">⚙️ الإعدادات</a>
 </div>
 
-<h3>جميع التقارير</h3>
+<h3 data-i18n="dashboard.allReportsTitle">جميع التقارير</h3>
 <div class="table-wrap">
 <table id="reportsTable">
 <tr>
-<th>رقم الباسبور</th>
-<th>الاسم بالعربي</th>
-<th>English Name</th>
-<th>رقم التليفون</th>
-<th>تاريخ التقرير</th>
-<th>حالة التقرير</th>
-<th>المستخدم</th>
-<th>تاريخ ووقت الإضافة</th>
-<th>روابط التحقق (QR / واتساب)</th>
-<th>حذف</th>
+<th data-i18n="th.passport">رقم الباسبور</th>
+<th data-i18n="th.nameAr">الاسم بالعربي</th>
+<th data-i18n="th.nameEn">English Name</th>
+<th data-i18n="th.phone">رقم التليفون</th>
+<th data-i18n="th.reportDate">تاريخ التقرير</th>
+<th data-i18n="th.status">حالة التقرير</th>
+<th data-i18n="th.user">المستخدم</th>
+<th data-i18n="th.addedAt">تاريخ ووقت الإضافة</th>
+<th data-i18n="th.verifyLinks">روابط التحقق (QR / واتساب)</th>
+<th data-i18n="th.delete">حذف</th>
 </tr>
 </table>
 </div>
 
 </div>
 
-<p id="timer">الوقت المتبقي قبل تسجيل الخروج التلقائي: <span id="timeDisplay"></span></p>
+<p id="timer"><span data-i18n="dashboard.timerLabel">الوقت المتبقي قبل تسجيل الخروج التلقائي:</span> <span id="timeDisplay"></span></p>
 
 <div id="qrModal" class="modal">
 <div class="modal-content" style="width:340px;">
-<h3 style="margin-top:0;">QR التحقق من التقرير</h3>
+<h3 style="margin-top:0;" data-i18n="qrmodal.title">QR التحقق من التقرير</h3>
 <p id="qrPersonName" style="font-weight:700;color:var(--text-muted);margin:-6px 0 10px;"></p>
 <canvas id="qrCanvas"></canvas>
 <p style="font-size:12px;color:var(--text-muted);word-break:break-all;margin-top:10px;">
     <a id="qrLinkText" href="#" target="_blank" rel="noopener" style="color:var(--blue-dark);"></a>
 </p>
 <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-top:8px;">
-    <button class="download-btn" onclick="downloadQrCanvas()">⬇️ تنزيل الصورة</button>
-    <button class="excel-btn" onclick="copyQrLink()">🔗 نسخ الرابط</button>
-    <button onclick="closeQrModal()">إغلاق</button>
+    <button class="download-btn" onclick="downloadQrCanvas()" data-i18n="qrmodal.download">⬇️ تنزيل الصورة</button>
+    <button class="excel-btn" onclick="copyQrLink()" data-i18n="qrmodal.copyLink">🔗 نسخ الرابط</button>
+    <button onclick="closeQrModal()" data-i18n="qrmodal.close">إغلاق</button>
 </div>
-<p style="font-size:11.5px;color:var(--text-muted);margin-top:10px;">
+<p style="font-size:11.5px;color:var(--text-muted);margin-top:10px;" data-i18n="qrmodal.hint">
     امسح الكود بكاميرا الموبايل عشان تفتح صفحة نتيجة التقرير مباشرة أونلاين، من غير ما تدخل بيانات يدويًا.
 </p>
 </div>
@@ -132,6 +133,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
 <script src="js/config.js"></script>
+<script src="js/i18n.js"></script>
 <script src="js/api.js"></script>
 <script src="js/whatsapp.js"></script>
 <script src="js/qr.js"></script>
@@ -158,23 +160,23 @@ function renderTable(){
     const usersList = [...new Set(reportsData.map(r => r.added_by).filter(Boolean))];
     const userFilter = document.getElementById('userFilter');
     const currentFilterVal = userFilter.value;
-    userFilter.innerHTML = '<option value="">الكل</option>' +
+    userFilter.innerHTML = `<option value="">${t('dashboard.all')}</option>` +
         usersList.map(u => `<option value="${escapeHtml(u)}">${escapeHtml(u)}</option>`).join('');
     userFilter.value = currentFilterVal;
 
     const table = document.getElementById('reportsTable');
     let html = `<tr>
-        <th>رقم الباسبور</th><th>الاسم بالعربي</th><th>English Name</th>
-        <th>رقم التليفون</th><th>تاريخ التقرير</th><th>حالة التقرير</th>
-        <th>المستخدم</th><th>تاريخ ووقت الإضافة</th>
-        <th>روابط التحقق (QR / واتساب)</th><th>حذف</th></tr>`;
+        <th>${t('th.passport')}</th><th>${t('th.nameAr')}</th><th>${t('th.nameEn')}</th>
+        <th>${t('th.phone')}</th><th>${t('th.reportDate')}</th><th>${t('th.status')}</th>
+        <th>${t('th.user')}</th><th>${t('th.addedAt')}</th>
+        <th>${t('th.verifyLinks')}</th><th>${t('th.delete')}</th></tr>`;
 
     reportsData.forEach((report, index) => {
         const rowClass = duplicateIndex === index ? "class='duplicate-row'" : '';
         const statusClass = report.report_status === 'valid' ? 'valid' : 'not-valid';
         const statusLabel = report.report_status === 'valid' ? 'Valid' : 'Not Valid';
         const delCell = session.role === 'admin'
-            ? `<a href="#" onclick="deleteReport(${index}); return false;" style="color:#e2483d;font-weight:bold;text-decoration:none;">حذف</a>`
+            ? `<a href="#" onclick="deleteReport(${index}); return false;" style="color:#e2483d;font-weight:bold;text-decoration:none;">${t('th.delete')}</a>`
             : '-';
         html += `<tr ${rowClass}>
             <td>${escapeHtml(report.passport)}</td>
@@ -187,8 +189,8 @@ function renderTable(){
             <td>${escapeHtml(report.added_at || '-')}</td>
             <td>
                 <div class="action-icons">
-                    <button type="button" class="icon-action-btn qr-action-btn" title="عرض QR للعميل (فتح مباشر للنتيجة)" onclick="showReportQr(reportsData[${index}])">📱</button>
-                    <button type="button" class="icon-action-btn wa-action-btn" title="إرسال التقرير عبر واتساب" onclick="sendReportViaWhatsApp(reportsData[${index}])">💬</button>
+                    <button type="button" class="icon-action-btn qr-action-btn" title="${t('action.qrTitle')}" onclick="showReportQr(reportsData[${index}])">📱</button>
+                    <button type="button" class="icon-action-btn wa-action-btn" title="${t('action.waTitle')}" onclick="sendReportViaWhatsApp(reportsData[${index}])">💬</button>
                 </div>
             </td>
             <td>${delCell}</td>
@@ -204,12 +206,12 @@ async function loadReports(){
 
 async function deleteReport(index){
     if (session.role !== 'admin') return;
-    if (!confirm('هل أنت متأكد من حذف هذا التقرير؟')) return;
+    if (!confirm(t('dashboard.confirmDelete'))) return;
     const backup = reportsData.slice();
     reportsData.splice(index, 1);
     const ok = await sheetsSaveData(reportsData);
     if (!ok) {
-        showError('⚠️ حصل خطأ أثناء الحفظ في الشيت، لم يتم حذف التقرير. جرّب تاني.');
+        showError(t('dashboard.deleteFailed'));
         reportsData = backup;
     }
     await loadReports();
@@ -229,7 +231,7 @@ document.getElementById('reportForm').addEventListener('submit', async function(
 
     if (dupIdx !== -1) {
         duplicateIndex = dupIdx;
-        showError('⚠️ آسف: التقرير موجود بالفعل لنفس الشخص في نفس التاريخ.');
+        showError(t('dashboard.duplicateError'));
         renderTable();
         return;
     }
@@ -249,7 +251,7 @@ document.getElementById('reportForm').addEventListener('submit', async function(
     const ok = await sheetsSaveData(reportsData);
     if (!ok) {
         reportsData.pop();
-        showError('⚠️ حصل خطأ أثناء الحفظ في الشيت، لم تتم إضافة التقرير. تأكد من رابط ومفتاح Google Apps Script في js/config.js وحاول تاني.');
+        showError(t('dashboard.saveFailedAdd'));
         renderTable();
         return;
     }
@@ -289,14 +291,14 @@ function exportTableToExcel(){
     const indices = visibleRows.map(r => Array.from(r.parentNode.children).indexOf(r) - 1);
     const rowsToExport = indices.map(i => reportsData[i]).filter(Boolean);
     exportArrayToExcel(rowsToExport, [
-        { key: 'passport', label: 'رقم الباسبور' },
-        { key: 'name_ar', label: 'الاسم بالعربي' },
-        { key: 'name_en', label: 'English Name' },
-        { key: 'phone', label: 'رقم التليفون' },
-        { key: 'report_date', label: 'تاريخ التقرير' },
-        { key: 'report_status', label: 'حالة التقرير' },
-        { key: 'added_by', label: 'المستخدم' },
-        { key: 'added_at', label: 'تاريخ ووقت الإضافة' }
+        { key: 'passport', label: t('th.passport') },
+        { key: 'name_ar', label: t('th.nameAr') },
+        { key: 'name_en', label: t('th.nameEn') },
+        { key: 'phone', label: t('th.phone') },
+        { key: 'report_date', label: t('th.reportDate') },
+        { key: 'report_status', label: t('th.status') },
+        { key: 'added_by', label: t('th.user') },
+        { key: 'added_at', label: t('th.addedAt') }
     ], 'reports.xls');
 }
 
@@ -321,7 +323,7 @@ function startTimer(){
         document.getElementById('timeDisplay').style.background = (remaining <= warningTime && remaining > 0) ? '#ffcc00' : '#ffc';
         if (remaining <= 0) {
             clearInterval(countdown);
-            alert('تم تسجيل الخروج تلقائيًا بسبب عدم النشاط.');
+            alert(t('dashboard.idleLogoutAlert'));
             logout();
         }
         updateDisplay(remaining);
@@ -331,7 +333,7 @@ function startTimer(){
 function updateDisplay(seconds){
     const min = Math.floor(seconds/60);
     const sec = seconds % 60;
-    document.getElementById('timeDisplay').textContent = `${min} دقيقة و ${sec} ثانية`;
+    document.getElementById('timeDisplay').textContent = t('dashboard.minutesSeconds', { m: min, s: sec });
 }
 
 ['mousemove','keydown','scroll','click'].forEach(evt => document.addEventListener(evt, resetTimer));
@@ -347,6 +349,8 @@ function updateDisplay(seconds){
     startTimer();
     await loadReports();
 })();
+
+window.addEventListener('nsh:langchange', renderTable);
 </script>
 
 </body>

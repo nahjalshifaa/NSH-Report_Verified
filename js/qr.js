@@ -69,7 +69,7 @@ async function showReportQr(report) {
 
     const ok = await drawQrOnCanvas(canvas, link);
     if (!ok) {
-        showToast('⚠️ حصل خطأ أثناء توليد كود الـ QR. تأكد من اتصال الجهاز بالإنترنت وحاول تاني.', true);
+        showToast(t('qr.genError'), true);
         return;
     }
 
@@ -99,10 +99,10 @@ function copyQrLink() {
     if (!link) return;
     if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(link)
-            .then(() => showToast('✅ تم نسخ الرابط.'))
-            .catch(() => showToast('⚠️ تعذر نسخ الرابط تلقائيًا، انسخه يدويًا من الصفحة.', true));
+            .then(() => showToast(t('qr.copySuccess')))
+            .catch(() => showToast(t('qr.copyFail'), true));
     } else {
-        showToast('⚠️ تعذر نسخ الرابط تلقائيًا، انسخه يدويًا من الصفحة.', true);
+        showToast(t('qr.copyFail'), true);
     }
 }
 
@@ -119,20 +119,20 @@ async function sendReportViaWhatsApp(report) {
 
     const phone = normalizePhoneForWhatsApp(report.phone);
     if (!phone) {
-        showToast('⚠️ لا يوجد رقم تليفون صحيح مسجّل لهذا التقرير.', true);
+        showToast(t('qr.noPhone'), true);
         return;
     }
 
     const link = buildReportVerifyLink(report);
     const isValid = report.report_status === 'valid';
-    const statusText = isValid ? 'صالح ✅' : 'غير صالح ❌';
+    const statusText = isValid ? t('qr.waStatusValid') : t('qr.waStatusNotValid');
 
     const message =
-        `مرحبًا ${report.name_ar || report.name_en || ''}،\n` +
-        `تقرير الفحص الخاص بك بتاريخ ${report.report_date || ''} — الحالة: ${statusText}\n\n` +
-        `يمكنك التحقق من نتيجتك مباشرة أونلاين عبر الرابط التالي:\n${link}\n\n` +
-        `مرفق كذلك كود QR لنفس النتيجة، يمكنك مسحه مباشرة بكاميرا الموبايل.\n\n` +
-        `مجمع نهج الشفاء الطبي العام`;
+        `${t('qr.waGreeting', { name: report.name_ar || report.name_en || '' })}\n` +
+        `${t('qr.waStatusLine', { date: report.report_date || '', status: statusText })}\n\n` +
+        `${t('qr.waCheckLine')}\n${link}\n\n` +
+        `${t('qr.waQrLine')}\n\n` +
+        `${t('common.orgName')}`;
 
     // نولّد صورة QR وننزّلها أوتوماتيك عشان الموظف يقدر يرفقها يدويًا في نفس شات واتساب
     const tempCanvas = document.createElement('canvas');
@@ -144,9 +144,9 @@ async function sendReportViaWhatsApp(report) {
         document.body.appendChild(a);
         a.click();
         a.remove();
-        showToast('📥 تم تنزيل صورة QR — أرفقها يدويًا في شات واتساب اللي هيفتح الآن.');
+        showToast(t('qr.downloadedNotice'));
     } else {
-        showToast('⚠️ حصل خطأ أثناء توليد صورة QR، هيتم فتح واتساب بالرابط بس.', true);
+        showToast(t('qr.downloadFailedFallback'), true);
     }
 
     const waLink = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;

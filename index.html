@@ -2,6 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
+<script>(function(){var l=localStorage.getItem('nsh_lang')||'ar';document.documentElement.lang=l;document.documentElement.dir=(l==='ar'?'rtl':'ltr');})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>تسجيل الدخول</title>
 <link rel="stylesheet" href="css/style.css">
@@ -11,12 +12,12 @@
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
 <link rel="icon" type="image/jpeg" href="img/logo.jpg">
 </head>
-<body>
+<body data-i18n-doctitle="login.title">
 
 <header class="site-header">
     <img src="img/logo.jpg" alt="مجمع نهج الشفاء الطبي العام" class="logo-img">
     <div class="brand-text">
-        <strong>مجمع نهج الشفاء الطبي العام</strong>
+        <strong data-i18n="common.orgName">مجمع نهج الشفاء الطبي العام</strong>
         <span>NAHJ AL-SHIFAA GENERAL MEDICAL COMPLEX</span>
     </div>
 </header>
@@ -24,55 +25,56 @@
 <div class="container narrow">
 
 <div class="auth-tabs">
-    <button type="button" class="auth-tab-btn active" id="tabLoginBtn" onclick="switchAuthTab('login')">تسجيل الدخول</button>
-    <button type="button" class="auth-tab-btn" id="tabRegisterBtn" onclick="switchAuthTab('register')">تسجيل موظف جديد</button>
+    <button type="button" class="auth-tab-btn active" id="tabLoginBtn" onclick="switchAuthTab('login')" data-i18n="login.tab">تسجيل الدخول</button>
+    <button type="button" class="auth-tab-btn" id="tabRegisterBtn" onclick="switchAuthTab('register')" data-i18n="register.tab">تسجيل موظف جديد</button>
 </div>
 
 <!-- ================= تسجيل الدخول ================= -->
 <div class="auth-panel active" id="loginPanel">
-<h2>تسجيل الدخول</h2>
+<h2 data-i18n="login.title">تسجيل الدخول</h2>
 
 <p id="error" class="error" style="display:none;"></p>
 
 <form id="loginForm">
-<input type="text" id="username" placeholder="اسم المستخدم" required>
-<input type="password" id="password" placeholder="كلمة المرور" required>
+<input type="text" id="username" placeholder="اسم المستخدم" required data-i18n-ph="login.usernamePh">
+<input type="password" id="password" placeholder="كلمة المرور" required data-i18n-ph="login.passwordPh">
 
 <div id="loginCaptchaContainer"></div>
 
 <br>
-<button type="submit">دخول</button>
+<button type="submit" data-i18n="login.submit">دخول</button>
 </form>
 
-<a href="view.html" class="check-link">🔍 التحقق من النتيجة</a>
+<a href="view.html" class="check-link" data-i18n="login.checkResult">🔍 التحقق من النتيجة</a>
 </div>
 
 <!-- ================= تسجيل موظف جديد ================= -->
 <div class="auth-panel" id="registerPanel">
-<h2>تسجيل موظف جديد</h2>
-<p style="color:var(--text-muted); font-size:13.5px; margin-top:-6px;">هيتم إرسال طلبك إلى الأدمن للموافقة عليه قبل ما تقدر تدخل بحسابك.</p>
+<h2 data-i18n="register.title">تسجيل موظف جديد</h2>
+<p style="color:var(--text-muted); font-size:13.5px; margin-top:-6px;" data-i18n="register.note">هيتم إرسال طلبك إلى الأدمن للموافقة عليه قبل ما تقدر تدخل بحسابك.</p>
 
 <p id="regError" class="error" style="display:none;"></p>
-<div id="regPendingNote" class="pending-note" style="display:none;">✅ تم إرسال طلب التسجيل بنجاح! برجاء انتظار موافقة الأدمن على حسابك قبل تسجيل الدخول.</div>
+<div id="regPendingNote" class="pending-note" style="display:none;" data-i18n="register.pendingNote">✅ تم إرسال طلب التسجيل بنجاح! برجاء انتظار موافقة الأدمن على حسابك قبل تسجيل الدخول.</div>
 
 <form id="registerForm">
-<input type="text" id="reg_full_name" placeholder="اسمك" required>
-<input type="text" id="reg_username" placeholder="يوزر نيم" required>
-<input type="tel" id="reg_phone" placeholder="رقم التليفون" required>
-<input type="text" id="reg_employee_id" placeholder="الرقم الوظيفي" required>
-<input type="email" id="reg_email" placeholder="الايميل (اختياري)">
-<input type="password" id="reg_password" placeholder="باسورد" required>
+<input type="text" id="reg_full_name" placeholder="اسمك" required data-i18n-ph="register.fullNamePh">
+<input type="text" id="reg_username" placeholder="يوزر نيم" required data-i18n-ph="register.usernamePh">
+<input type="tel" id="reg_phone" placeholder="رقم التليفون" required data-i18n-ph="register.phonePh">
+<input type="text" id="reg_employee_id" placeholder="الرقم الوظيفي" required data-i18n-ph="register.employeeIdPh">
+<input type="email" id="reg_email" placeholder="الايميل (اختياري)" data-i18n-ph="register.emailPh">
+<input type="password" id="reg_password" placeholder="باسورد" required data-i18n-ph="register.passwordPh">
 
 <div id="registerCaptchaContainer"></div>
 
 <br>
-<button type="submit" id="registerSubmitBtn">إرسال طلب التسجيل</button>
+<button type="submit" id="registerSubmitBtn" data-i18n="register.submit">إرسال طلب التسجيل</button>
 </form>
 </div>
 
 </div>
 
 <script src="js/config.js"></script>
+<script src="js/i18n.js"></script>
 <script src="js/api.js"></script>
 <script src="js/captcha.js"></script>
 <script src="js/whatsapp.js"></script>
@@ -103,14 +105,14 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
     errorEl.style.display = 'none';
 
     if (!loginCaptcha.verify()) {
-        errorEl.textContent = '⚠️ الكود اللي كتبته غير مطابق، جرّب الكود الجديد.';
+        errorEl.textContent = t('captcha.mismatch');
         errorEl.style.display = 'block';
         return;
     }
 
     const submitBtn = e.target.querySelector('button');
     submitBtn.disabled = true;
-    submitBtn.textContent = '... جاري الدخول';
+    submitBtn.textContent = t('login.submitLoading');
 
     try {
         const hashedPassword = await hashPassword(password);
@@ -118,7 +120,7 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
         const match = users.find(u => u.username == username && u.password == hashedPassword);
 
         if (match && match.status === 'inactive') {
-            errorEl.textContent = '⚠️ حسابك موقوف حاليًا، تواصل مع الأدمن.';
+            errorEl.textContent = t('login.errAccountInactive');
             errorEl.style.display = 'block';
             loginCaptcha.regenerate();
             return;
@@ -134,22 +136,22 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
         const pending = await sheetsGetPending();
         const pendingMatch = pending.find(p => p.username == username);
         if (pendingMatch) {
-            errorEl.textContent = '⏳ طلب تسجيلك لسه بانتظار موافقة الأدمن، حاول تاني بعد ما يتم قبولك.';
+            errorEl.textContent = t('login.errPendingApproval');
         } else {
-            errorEl.textContent = '⚠️ اسم المستخدم أو كلمة المرور غير صحيحة!';
+            errorEl.textContent = t('login.errWrongCredentials');
         }
         errorEl.style.display = 'block';
         loginCaptcha.regenerate();
     } catch (err) {
         console.error('login error:', err);
         errorEl.textContent = (err && err.message === 'crypto_unavailable')
-            ? '⚠️ الموقع محتاج يفتح عن طريق HTTPS عشان تسجيل الدخول يشتغل (تواصل مع الأدمن).'
-            : '⚠️ حصل خطأ غير متوقع، تأكد من الاتصال بالإنترنت وحاول تاني.';
+            ? t('login.errHttps')
+            : t('login.errUnexpected');
         errorEl.style.display = 'block';
         loginCaptcha.regenerate();
     } finally {
         submitBtn.disabled = false;
-        submitBtn.textContent = 'دخول';
+        submitBtn.textContent = t('login.submit');
     }
 });
 
@@ -161,7 +163,7 @@ document.getElementById('registerForm').addEventListener('submit', async functio
     noteEl.style.display = 'none';
 
     if (!registerCaptcha.verify()) {
-        errorEl.textContent = '⚠️ الكود اللي كتبته غير مطابق، جرّب الكود الجديد.';
+        errorEl.textContent = t('captcha.mismatch');
         errorEl.style.display = 'block';
         return;
     }
@@ -175,13 +177,13 @@ document.getElementById('registerForm').addEventListener('submit', async functio
 
     const submitBtn = document.getElementById('registerSubmitBtn');
     submitBtn.disabled = true;
-    submitBtn.textContent = '... جاري الإرسال';
+    submitBtn.textContent = t('register.submitLoading');
 
     try {
         const [users, pending] = await Promise.all([sheetsGetUsers(), sheetsGetPending()]);
 
         if (users.some(u => u.username === username) || pending.some(p => p.username === username)) {
-            errorEl.textContent = '⚠️ اسم المستخدم ده مستخدم بالفعل أو له طلب تسجيل قائم بالفعل.';
+            errorEl.textContent = t('register.errUsernameTaken');
             errorEl.style.display = 'block';
             registerCaptcha.regenerate();
             return;
@@ -199,20 +201,20 @@ document.getElementById('registerForm').addEventListener('submit', async functio
             e.target.reset();
             noteEl.style.display = 'block';
         } else {
-            errorEl.textContent = '⚠️ حصل خطأ أثناء إرسال الطلب، تأكد من الاتصال وحاول تاني.';
+            errorEl.textContent = t('register.errSaveFailed');
             errorEl.style.display = 'block';
         }
         registerCaptcha.regenerate();
     } catch (err) {
         console.error('register error:', err);
         errorEl.textContent = (err && err.message === 'crypto_unavailable')
-            ? '⚠️ الموقع محتاج يفتح عن طريق HTTPS عشان التسجيل يشتغل (تواصل مع الأدمن).'
-            : '⚠️ حصل خطأ غير متوقع، تأكد من الاتصال بالإنترنت وحاول تاني.';
+            ? t('register.errHttps')
+            : t('login.errUnexpected');
         errorEl.style.display = 'block';
         registerCaptcha.regenerate();
     } finally {
         submitBtn.disabled = false;
-        submitBtn.textContent = 'إرسال طلب التسجيل';
+        submitBtn.textContent = t('register.submit');
     }
 });
 </script>

@@ -2,6 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
+<script>(function(){var l=localStorage.getItem('nsh_lang')||'ar';document.documentElement.lang=l;document.documentElement.dir=(l==='ar'?'rtl':'ltr');})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>نتيجة البحث</title>
 <link rel="stylesheet" href="css/style.css">
@@ -11,22 +12,23 @@
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
 <link rel="icon" type="image/jpeg" href="img/logo.jpg">
 </head>
-<body>
+<body data-i18n-doctitle="result.title">
 
 <header class="site-header">
     <img src="img/logo.jpg" alt="مجمع نهج الشفاء الطبي العام" class="logo-img">
     <div class="brand-text">
-        <strong>مجمع نهج الشفاء الطبي العام</strong>
-        <span>نظام التحقق من التقارير</span>
+        <strong data-i18n="common.orgName">مجمع نهج الشفاء الطبي العام</strong>
+        <span data-i18n="view.subtitle">نظام التحقق من التقارير</span>
     </div>
 </header>
 
 <div class="container medium" id="resultsContainer">
-<h2>نتائج البحث</h2>
-<p>... جاري البحث</p>
+<h2 data-i18n="result.title">نتائج البحث</h2>
+<p data-i18n="result.searching">... جاري البحث</p>
 </div>
 
 <script src="js/config.js"></script>
+<script src="js/i18n.js"></script>
 <script src="js/api.js"></script>
 <script src="js/whatsapp.js"></script>
 <script src="js/footer.js"></script>
@@ -52,12 +54,12 @@ function confettiHtml(){
 
 function exportResultsToExcel(){
     exportArrayToExcel(lastResults, [
-        { key: 'passport', label: 'رقم الباسبور' },
-        { key: 'name_ar', label: 'الاسم بالعربي' },
-        { key: 'name_en', label: 'English Name' },
-        { key: 'phone', label: 'رقم التليفون' },
-        { key: 'report_date', label: 'تاريخ التقرير' },
-        { key: 'report_status', label: 'حالة التقرير' }
+        { key: 'passport', label: t('th.passport') },
+        { key: 'name_ar', label: t('th.nameAr') },
+        { key: 'name_en', label: t('th.nameEn') },
+        { key: 'phone', label: t('th.phone') },
+        { key: 'report_date', label: t('th.reportDate') },
+        { key: 'report_status', label: t('th.status') }
     ], 'search_results.xls');
 }
 
@@ -92,17 +94,17 @@ async function run(){
     const printHeader = `
         <div class="print-logo-header">
             <img src="img/logo.jpg" alt="مجمع نهج الشفاء الطبي العام" style="height:40px;">
-            <strong>مجمع نهج الشفاء الطبي العام</strong>
+            <strong data-i18n="common.orgName">مجمع نهج الشفاء الطبي العام</strong>
         </div>`;
     if (results.length > 0) {
-        let html = printHeader + '<h2>نتائج البحث</h2>';
+        let html = printHeader + `<h2>${t('result.title')}</h2>`;
         if (results.length > 1) {
-            html += `<p style="color:var(--text-muted);font-size:14px;text-align:center;">تم العثور على ${results.length} تقرير مطابق لرقم الباسبور/الإقامة.</p>`;
+            html += `<p style="color:var(--text-muted);font-size:14px;text-align:center;">${t('result.matchCount', { n: results.length })}</p>`;
         }
         results.forEach(report => {
             const isValid = report.report_status === 'valid';
             const iconClass = isValid ? 'is-valid' : 'is-invalid';
-            const statusText = isValid ? 'Report Valid' : 'Report Not Valid';
+            const statusText = isValid ? t('result.statusValid') : t('result.statusNotValid');
             html += `
             <div class="report-card">
                 <div class="result-stamp-wrap">
@@ -113,37 +115,38 @@ async function run(){
                     <div class="result-status-text ${iconClass}">${statusText}</div>
                 </div>
                 <hr style="border:none;border-top:1px solid var(--border);margin:16px 0;">
-                <p><span class="label">رقم الباسبور:</span> ${escapeHtml(report.passport)}</p>
-                <p><span class="label">الاسم عربي:</span> ${escapeHtml(report.name_ar)}</p>
-                <p><span class="label">English Name:</span> ${escapeHtml(report.name_en)}</p>
-                <p><span class="label">رقم التليفون:</span> ${escapeHtml(report.phone)}</p>
-                <p><span class="label">تاريخ التقرير:</span> ${escapeHtml(report.report_date)}</p>
+                <p><span class="label">${t('result.labelPassport')}</span> ${escapeHtml(report.passport)}</p>
+                <p><span class="label">${t('result.labelNameAr')}</span> ${escapeHtml(report.name_ar)}</p>
+                <p><span class="label">${t('result.labelNameEn')}</span> ${escapeHtml(report.name_en)}</p>
+                <p><span class="label">${t('result.labelPhone')}</span> ${escapeHtml(report.phone)}</p>
+                <p><span class="label">${t('result.labelDate')}</span> ${escapeHtml(report.report_date)}</p>
             </div>`;
         });
         html += `
         <div class="button-group">
-            <button class="search-again" onclick="window.location.href='view.html'">بحث مرة أخرى</button>
-            <button class="print-btn" onclick="window.print()">🖨️ طباعة</button>
-            <button class="export-btn" onclick="exportResultsToExcel()">📁 تصدير Excel</button>
+            <button class="search-again" onclick="window.location.href='view.html'">${t('result.searchAgain')}</button>
+            <button class="print-btn" onclick="window.print()">${t('result.print')}</button>
+            <button class="export-btn" onclick="exportResultsToExcel()">${t('result.exportExcel')}</button>
         </div>`;
         container.innerHTML = html;
     } else {
         const anyForPassport = data.some(r => String(r.passport).trim() === passport);
         let msg;
         if (!anyForPassport) {
-            msg = 'لا يوجد أي تقرير مسجّل بهذا الرقم. تأكد من رقم الباسبور/الإقامة وحاول مرة أخرى.';
+            msg = t('result.noResultNotFound');
         } else if (report_date || phone) {
-            msg = 'يوجد تقرير بهذا الرقم، لكن لا يوجد ما يطابق التاريخ و/أو رقم التليفون اللي دخلتهم. جرّب البحث برقم الباسبور فقط.';
+            msg = t('result.noResultNarrowed');
         } else {
-            msg = 'لا توجد نتائج مطابقة للبحث.';
+            msg = t('result.noResultGeneric');
         }
         container.innerHTML = `
-        <h2>نتائج البحث</h2>
+        <h2>${t('result.title')}</h2>
         <p class="no-result">${msg}</p>
-        <button class="search-again" onclick="window.location.href='view.html'">بحث مرة أخرى</button>`;
+        <button class="search-again" onclick="window.location.href='view.html'">${t('result.searchAgain')}</button>`;
     }
 }
 run();
+window.addEventListener('nsh:langchange', run);
 </script>
 </body>
 </html>

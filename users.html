@@ -2,6 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
+<script>(function(){var l=localStorage.getItem('nsh_lang')||'ar';document.documentElement.lang=l;document.documentElement.dir=(l==='ar'?'rtl':'ltr');})();</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>إدارة المستخدمين</title>
 <link rel="stylesheet" href="css/style.css">
@@ -11,105 +12,106 @@
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
 <link rel="icon" type="image/jpeg" href="img/logo.jpg">
 </head>
-<body>
+<body data-i18n-doctitle="users.title">
 
 <header class="site-header">
     <img src="img/logo.jpg" alt="مجمع نهج الشفاء الطبي العام" class="logo-img">
     <div class="brand-text">
-        <strong>مجمع نهج الشفاء الطبي العام</strong>
-        <span>إدارة المستخدمين</span>
+        <strong data-i18n="common.orgName">مجمع نهج الشفاء الطبي العام</strong>
+        <span data-i18n="users.subtitle">إدارة المستخدمين</span>
     </div>
     <div class="header-spacer"></div>
     <div class="header-actions">
-        <a href="dashboard.html" class="back-btn">⬅️ Dashboard</a>
-        <a href="#" class="logout-btn" onclick="logout(); return false;">⎋ تسجيل الخروج</a>
+        <a href="dashboard.html" class="back-btn" data-i18n="nav.dashboardShort">⬅️ Dashboard</a>
+        <a href="#" class="logout-btn" onclick="logout(); return false;" data-i18n="nav.logout">⎋ تسجيل الخروج</a>
     </div>
 </header>
 
 <div class="container">
-<h2>إدارة المستخدمين</h2>
+<h2 data-i18n="users.title">إدارة المستخدمين</h2>
 <p id="msg" class="success" style="display:none;"></p>
 
-<h3>📥 طلبات تسجيل الموظفين الجدد</h3>
+<h3 data-i18n="users.pendingTitle">📥 طلبات تسجيل الموظفين الجدد</h3>
 <div id="pendingSection">
-    <p class="pending-empty">... جاري تحميل الطلبات</p>
+    <p class="pending-empty" data-i18n="users.loadingRequests">... جاري تحميل الطلبات</p>
 </div>
 
-<h3>إضافة مستخدم جديد</h3>
+<h3 data-i18n="users.addNewTitle">إضافة مستخدم جديد</h3>
 <form id="addUserForm">
-<input type="text" id="new_username" placeholder="اسم المستخدم" required>
-<input type="text" id="new_full_name" placeholder="الاسم الكامل" required>
-<input type="text" id="new_password" placeholder="كلمة المرور" required>
+<input type="text" id="new_username" placeholder="اسم المستخدم" required data-i18n-ph="users.usernamePh">
+<input type="text" id="new_full_name" placeholder="الاسم الكامل" required data-i18n-ph="users.fullNamePh">
+<input type="text" id="new_password" placeholder="كلمة المرور" required data-i18n-ph="users.passwordPh">
 <select id="new_role" required>
     <option value="user" selected>User</option>
     <option value="admin">Admin</option>
 </select>
 <br>
-<button type="submit" class="add-btn">إضافة مستخدم</button>
+<button type="submit" class="add-btn" data-i18n="users.addBtn">إضافة مستخدم</button>
 </form>
 
-<h3>قائمة المستخدمين</h3>
+<h3 data-i18n="users.listTitle">قائمة المستخدمين</h3>
 <div class="table-wrap">
 <table id="usersTable">
 <tr>
-<th>اسم المستخدم</th>
-<th>الاسم الكامل</th>
-<th>رقم التليفون</th>
-<th>الرقم الوظيفي</th>
-<th>الايميل</th>
-<th>الصلاحية</th>
-<th>الحالة</th>
-<th>مدة عدم النشاط</th>
-<th>مدة التحذير</th>
-<th>تعديل</th>
-<th>إيقاف/تشغيل</th>
-<th>حذف</th>
-<th>حفظ</th>
-<th>كلمة السر</th>
+<th data-i18n="th.username">اسم المستخدم</th>
+<th data-i18n="th.fullName">الاسم الكامل</th>
+<th data-i18n="th.phone">رقم التليفون</th>
+<th data-i18n="th.employeeId">الرقم الوظيفي</th>
+<th data-i18n="th.email">الايميل</th>
+<th data-i18n="th.role">الصلاحية</th>
+<th data-i18n="th.status2">الحالة</th>
+<th data-i18n="th.idleTime">مدة عدم النشاط</th>
+<th data-i18n="th.warningTime">مدة التحذير</th>
+<th data-i18n="th.edit">تعديل</th>
+<th data-i18n="th.toggle">إيقاف/تشغيل</th>
+<th data-i18n="th.delete">حذف</th>
+<th data-i18n="th.save">حفظ</th>
+<th data-i18n="th.passwordCol">كلمة السر</th>
 </tr>
 </table>
 </div>
 
 <div class="settings-section">
-<h3>إعدادات زر واتساب</h3>
-<p style="color:var(--text-muted); font-size:14px; margin-top:-6px;">حط رقم واتساب التواصل هنا عشان يظهر زرار "تحدث معنا" في كل صفحات الموقع. سيبه فاضي لو عايز تخفي الزرار مؤقتًا.</p>
+<h3 data-i18n="users.waSettingsTitle">إعدادات زر واتساب</h3>
+<p style="color:var(--text-muted); font-size:14px; margin-top:-6px;" data-i18n="users.waSettingsDesc">حط رقم واتساب التواصل هنا عشان يظهر زرار "تحدث معنا" في كل صفحات الموقع. سيبه فاضي لو عايز تخفي الزرار مؤقتًا.</p>
 <p id="waMsg" class="success" style="display:none;"></p>
 <form id="waSettingsForm">
-<label>رقم واتساب (بالصيغة الدولية بدون + أو مسافات، مثال: 966501234567)</label>
+<label data-i18n="users.waNumberLabel">رقم واتساب (بالصيغة الدولية بدون + أو مسافات، مثال: 966501234567)</label>
 <input type="text" id="wa_number" placeholder="966501234567">
-<label>نص الرسالة الافتراضي عند الضغط على الزرار</label>
+<label data-i18n="users.waMessageLabel">نص الرسالة الافتراضي عند الضغط على الزرار</label>
 <input type="text" id="wa_message" placeholder="مرحبًا، أرغب في الاستفسار">
-<button type="submit">💾 حفظ إعدادات واتساب</button>
+<button type="submit" data-i18n="users.saveWaBtn">💾 حفظ إعدادات واتساب</button>
 </form>
 </div>
 
 <div class="settings-section">
-<h3>إعدادات حقوق الملكية (الفوتر)</h3>
-<p style="color:var(--text-muted); font-size:14px; margin-top:-6px;">النص وبيانات التواصل اللي بتظهر في أسفل كل صفحات الموقع. سيب أي حقل فاضي لو عايز ترجع للقيمة الافتراضية بتاعته.</p>
+<h3 data-i18n="users.footerSettingsTitle">إعدادات حقوق الملكية (الفوتر)</h3>
+<p style="color:var(--text-muted); font-size:14px; margin-top:-6px;" data-i18n="users.footerSettingsDesc">النص وبيانات التواصل اللي بتظهر في أسفل كل صفحات الموقع. سيب أي حقل فاضي لو عايز ترجع للقيمة الافتراضية بتاعته.</p>
 <p id="copyrightMsg" class="success" style="display:none;"></p>
 <form id="copyrightSettingsForm">
-<label>نص حقوق الملكية</label>
+<label data-i18n="users.copyrightTextLabel">نص حقوق الملكية</label>
 <input type="text" id="copyright_text" placeholder="© جميع حقوق الملكية الفكرية لهذا التطبيق محفوظة لدى الشركة المطوّرة — مجمع نهج الشفاء الطبي العام">
-<label>رقم التليفون الأول</label>
+<label data-i18n="users.phone1Label">رقم التليفون الأول</label>
 <input type="text" id="footer_phone1" placeholder="01384679999">
-<label>رقم التليفون الثاني</label>
+<label data-i18n="users.phone2Label">رقم التليفون الثاني</label>
 <input type="text" id="footer_phone2" placeholder="05909331883">
-<label>البريد الإلكتروني</label>
+<label data-i18n="users.emailLabel">البريد الإلكتروني</label>
 <input type="email" id="footer_email" placeholder="info@nahjalshifaa.com">
-<button type="submit">💾 حفظ نص حقوق الملكية</button>
+<button type="submit" data-i18n="users.saveFooterBtn">💾 حفظ نص حقوق الملكية</button>
 </form>
 </div>
 </div>
 
 <div id="deleteModal" class="modal">
 <div class="modal-content">
-<p>هل أنت متأكد من حذف المستخدم؟</p>
-<button id="confirmDeleteBtn">نعم</button>
-<button onclick="closeModal()">إلغاء</button>
+<p data-i18n="users.deleteConfirmText">هل أنت متأكد من حذف المستخدم؟</p>
+<button id="confirmDeleteBtn" data-i18n="users.yes">نعم</button>
+<button onclick="closeModal()" data-i18n="users.cancel">إلغاء</button>
 </div>
 </div>
 
 <script src="js/config.js"></script>
+<script src="js/i18n.js"></script>
 <script src="js/api.js"></script>
 <script src="js/whatsapp.js"></script>
 <script src="js/footer.js"></script>
@@ -123,7 +125,7 @@ let deleteUsername = '';
 function renderPending(){
     const section = document.getElementById('pendingSection');
     if (!pendingData.length) {
-        section.innerHTML = '<p class="pending-empty">لا توجد طلبات تسجيل جديدة حاليًا.</p>';
+        section.innerHTML = `<p class="pending-empty">${t('users.noRequests')}</p>`;
         return;
     }
     section.innerHTML = pendingData.map((p, index) => `
@@ -132,11 +134,11 @@ function renderPending(){
                 <div class="pending-info">
                     <strong>${escapeHtml(p.full_name)}</strong> (${escapeHtml(p.username)})<br>
                     📞 ${escapeHtml(p.phone)} &nbsp;|&nbsp; 🆔 ${escapeHtml(p.employee_id)} &nbsp;|&nbsp; ✉️ ${escapeHtml(p.email)}<br>
-                    <span style="color:var(--text-muted);font-size:12px;">طلب بتاريخ: ${escapeHtml(p.requested_at || '-')}</span>
+                    <span style="color:var(--text-muted);font-size:12px;">${t('users.requestedAt')} ${escapeHtml(p.requested_at || '-')}</span>
                 </div>
                 <div class="pending-actions">
-                    <button type="button" class="approve-btn" onclick="approvePending(${index})">✅ موافقة</button>
-                    <button type="button" class="reject-btn" onclick="rejectPending(${index})">✖ رفض</button>
+                    <button type="button" class="approve-btn" onclick="approvePending(${index})">${t('users.approve')}</button>
+                    <button type="button" class="reject-btn" onclick="rejectPending(${index})">${t('users.reject')}</button>
                 </div>
             </div>
         </div>`).join('');
@@ -151,7 +153,7 @@ async function approvePending(index){
     const p = pendingData[index];
     if (!p) return;
     if (usersData.some(u => u.username === p.username)) {
-        showMsg('⚠️ اسم المستخدم موجود بالفعل في قائمة المستخدمين، احذف الطلب المكرر.');
+        showMsg(t('users.msgUsernameExistsUsers'));
         return;
     }
     const backupUsers = usersData.slice();
@@ -163,7 +165,7 @@ async function approvePending(index){
     const okUsers = await sheetsSaveUsers(usersData);
     if (!okUsers) {
         usersData = backupUsers;
-        showMsg('⚠️ حصل خطأ أثناء إضافة المستخدم، جرّب تاني.');
+        showMsg(t('users.msgAddUserFailed'));
         return;
     }
     const backupPending = pendingData.slice();
@@ -171,24 +173,24 @@ async function approvePending(index){
     const okPending = await sheetsSavePending(pendingData);
     if (!okPending) {
         pendingData = backupPending;
-        showMsg('⚠️ تمت إضافة المستخدم لكن حصل خطأ في تحديث قائمة الطلبات، احذف الطلب يدويًا.');
+        showMsg(t('users.msgPendingUpdateFailed'));
     } else {
-        showMsg(`✅ تم قبول طلب "${p.full_name}" وأصبح بإمكانه تسجيل الدخول.`);
+        showMsg(t('users.msgApproved', { name: p.full_name }));
     }
     renderUsers();
     renderPending();
 }
 
 async function rejectPending(index){
-    if (!confirm('هل أنت متأكد من رفض طلب التسجيل ده؟')) return;
+    if (!confirm(t('users.confirmRejectRequest'))) return;
     const backup = pendingData.slice();
     pendingData.splice(index, 1);
     const ok = await sheetsSavePending(pendingData);
     if (!ok) {
         pendingData = backup;
-        showMsg('⚠️ حصل خطأ أثناء رفض الطلب، جرّب تاني.');
+        showMsg(t('users.msgRejectFailed'));
     } else {
-        showMsg('✅ تم رفض طلب التسجيل.');
+        showMsg(t('users.msgRejected'));
     }
     renderPending();
 }
@@ -214,11 +216,11 @@ document.getElementById('waSettingsForm').addEventListener('submit', async funct
     settingsData = { ...settingsData, whatsapp_number: number, whatsapp_message: message };
     const ok = await sheetsSaveSettings(settingsData);
     if (ok) {
-        waMsgEl.textContent = '✅ تم حفظ إعدادات واتساب بنجاح!';
+        waMsgEl.textContent = t('users.msgWaSaved');
         waMsgEl.className = 'success';
         waMsgEl.style.display = 'block';
     } else {
-        waMsgEl.textContent = '⚠️ حصل خطأ أثناء الحفظ. الأسباب الشائعة: (1) لسه معملتش "New deployment" في Apps Script بعد آخر تحديث لـ Code.gs، (2) رابط أو مفتاح API غلط في js/config.js. افتح Console (F12) للتفاصيل.';
+        waMsgEl.textContent = t('users.msgSaveErrorGeneric');
         waMsgEl.className = 'error';
         waMsgEl.style.display = 'block';
     }
@@ -242,11 +244,11 @@ document.getElementById('copyrightSettingsForm').addEventListener('submit', asyn
     };
     const ok = await sheetsSaveSettings(settingsData);
     if (ok) {
-        copyrightMsgEl.textContent = '✅ تم حفظ بيانات الفوتر بنجاح!';
+        copyrightMsgEl.textContent = t('users.msgFooterSaved');
         copyrightMsgEl.className = 'success';
         copyrightMsgEl.style.display = 'block';
     } else {
-        copyrightMsgEl.textContent = '⚠️ حصل خطأ أثناء الحفظ. الأسباب الشائعة: (1) لسه معملتش "New deployment" في Apps Script بعد آخر تحديث لـ Code.gs، (2) رابط أو مفتاح API غلط في js/config.js. افتح Console (F12) للتفاصيل.';
+        copyrightMsgEl.textContent = t('users.msgSaveErrorGeneric');
         copyrightMsgEl.className = 'error';
         copyrightMsgEl.style.display = 'block';
     }
@@ -264,14 +266,14 @@ function showMsg(text){
 function renderUsers(){
     const table = document.getElementById('usersTable');
     let html = `<tr>
-        <th>اسم المستخدم</th><th>الاسم الكامل</th><th>رقم التليفون</th><th>الرقم الوظيفي</th><th>الايميل</th>
-        <th>الصلاحية</th><th>الحالة</th>
-        <th>مدة عدم النشاط</th><th>مدة التحذير</th><th>تعديل</th>
-        <th>إيقاف/تشغيل</th><th>حذف</th><th>حفظ</th><th>كلمة السر</th></tr>`;
+        <th>${t('th.username')}</th><th>${t('th.fullName')}</th><th>${t('th.phone')}</th><th>${t('th.employeeId')}</th><th>${t('th.email')}</th>
+        <th>${t('th.role')}</th><th>${t('th.status2')}</th>
+        <th>${t('th.idleTime')}</th><th>${t('th.warningTime')}</th><th>${t('th.edit')}</th>
+        <th>${t('th.toggle')}</th><th>${t('th.delete')}</th><th>${t('th.save')}</th><th>${t('th.passwordCol')}</th></tr>`;
 
     usersData.forEach((u, index) => {
         const statusBtnClass = u.status === 'inactive' ? 'status-btn inactive' : 'status-btn';
-        const statusText = u.status === 'active' ? 'إيقاف' : 'تشغيل';
+        const statusText = u.status === 'active' ? t('users.disable') : t('users.enable');
         html += `<tr data-index="${index}">
             <td>${escapeHtml(u.username)}</td>
             <td><input type="text" class="f_full_name" value="${escapeHtml(u.full_name)}" readonly></td>
@@ -287,12 +289,12 @@ function renderUsers(){
             <td><a href="#" class="${statusBtnClass}" onclick="toggleStatus('${escapeHtml(u.username)}'); return false;">${statusText}</a></td>
             <td><input type="number" class="f_idle_time" value="${u.idle_time ?? 30}" min="1" readonly style="width:60px;"></td>
             <td><input type="number" class="f_warning_time" value="${u.warning_time ?? 5}" min="1" readonly style="width:60px;"></td>
-            <td><button type="button" class="edit-btn" onclick="enableEdit(this)">✏️ تعديل</button></td>
+            <td><button type="button" class="edit-btn" onclick="enableEdit(this)">${t('users.editBtn')}</button></td>
             <td></td>
-            <td><button type="button" class="delete-btn" onclick="confirmDelete('${escapeHtml(u.username)}')">🗑️ حذف</button></td>
+            <td><button type="button" class="delete-btn" onclick="confirmDelete('${escapeHtml(u.username)}')">${t('users.deleteBtn')}</button></td>
             <td>
-                <input type="password" class="f_password" placeholder="كلمة السر" readonly>
-                <button type="button" class="save-btn" onclick="saveUser(${index})">💾 حفظ</button>
+                <input type="password" class="f_password" placeholder="${t('users.passwordFieldPh')}" readonly>
+                <button type="button" class="save-btn" onclick="saveUser(${index})">${t('users.saveBtn')}</button>
             </td>
         </tr>`;
     });
@@ -312,7 +314,7 @@ document.getElementById('addUserForm').addEventListener('submit', async function
     const role = document.getElementById('new_role').value;
 
     if (usersData.some(u => u.username === username)) {
-        showMsg('⚠️ اسم المستخدم موجود بالفعل!');
+        showMsg(t('users.msgUsernameExists'));
         return;
     }
 
@@ -323,13 +325,13 @@ document.getElementById('addUserForm').addEventListener('submit', async function
             status: 'active', idle_time: 30, warning_time: 5
         });
         const ok = await sheetsSaveUsers(usersData);
-        showMsg(ok ? '✅ تم إضافة المستخدم بنجاح!' : '⚠️ حصل خطأ أثناء الحفظ في الشيت، جرّب تاني.');
+        showMsg(ok ? t('users.msgUserAdded') : t('users.msgSaveSheetFailed'));
         if (ok) e.target.reset();
     } catch (err) {
         console.error('add user error:', err);
         showMsg((err && err.message === 'crypto_unavailable')
-            ? '⚠️ الموقع محتاج يفتح عن طريق HTTPS عشان تشفير كلمة السر يشتغل.'
-            : '⚠️ حصل خطأ غير متوقع، حاول تاني.');
+            ? t('users.msgHttpsPassword')
+            : t('users.msgUnexpected'));
     }
     await loadUsers();
 });
@@ -344,12 +346,12 @@ async function saveUser(index){
         const pw = row.querySelector('.f_password').value;
         if (pw) usersData[index].password = await hashPassword(pw);
         const ok = await sheetsSaveUsers(usersData);
-        showMsg(ok ? '✅ تم حفظ بيانات المستخدم بنجاح!' : '⚠️ حصل خطأ أثناء الحفظ في الشيت، جرّب تاني.');
+        showMsg(ok ? t('users.msgUserSaved') : t('users.msgSaveSheetFailed'));
     } catch (err) {
         console.error('save user error:', err);
         showMsg((err && err.message === 'crypto_unavailable')
-            ? '⚠️ الموقع محتاج يفتح عن طريق HTTPS عشان تشفير كلمة السر يشتغل.'
-            : '⚠️ حصل خطأ غير متوقع، حاول تاني.');
+            ? t('users.msgHttpsPassword')
+            : t('users.msgUnexpected'));
     }
     await loadUsers();
 }
@@ -359,7 +361,7 @@ async function toggleStatus(username){
     if (u) {
         u.status = u.status === 'active' ? 'inactive' : 'active';
         const ok = await sheetsSaveUsers(usersData);
-        showMsg(ok ? '✅ تم تحديث حالة المستخدم!' : '⚠️ حصل خطأ أثناء الحفظ في الشيت، جرّب تاني.');
+        showMsg(ok ? t('users.msgStatusUpdated') : t('users.msgSaveSheetFailed'));
         await loadUsers();
     }
 }
@@ -385,12 +387,13 @@ document.getElementById('confirmDeleteBtn').addEventListener('click', async func
     usersData = usersData.filter(u => u.username !== deleteUsername);
     const ok = await sheetsSaveUsers(usersData);
     closeModal();
-    showMsg(ok ? '✅ تم حذف المستخدم بنجاح!' : '⚠️ حصل خطأ أثناء الحفظ في الشيت، جرّب تاني.');
+    showMsg(ok ? t('users.msgUserDeleted') : t('users.msgSaveSheetFailed'));
     await loadUsers();
 });
 
 loadUsers();
 loadPending();
+window.addEventListener('nsh:langchange', function(){ renderUsers(); renderPending(); });
 </script>
 
 </body>

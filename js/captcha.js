@@ -72,12 +72,12 @@ function initCaptcha(prefix) {
 function captchaWidgetHtml(prefix) {
     return `
     <div class="captcha-box">
-        <label>اكتب الكود اللي جنبك (عشان نتأكد إنك مش SPAM )</label>
+        <label data-i18n="captcha.label">${t('captcha.label')}</label>
         <div class="captcha-row">
-            <button type="button" class="captcha-icon-btn" id="${prefix}CaptchaRefresh" title="تحديث الكود">🔄</button>
-            <button type="button" class="captcha-icon-btn" id="${prefix}CaptchaCopy" title="نسخ الكود">📋</button>
+            <button type="button" class="captcha-icon-btn" id="${prefix}CaptchaRefresh" title="${t('captcha.refreshTitle')}" data-i18n-title="captcha.refreshTitle">🔄</button>
+            <button type="button" class="captcha-icon-btn" id="${prefix}CaptchaCopy" title="${t('captcha.copyTitle')}" data-i18n-title="captcha.copyTitle">📋</button>
             <div class="captcha-code" id="${prefix}CaptchaCode" dir="ltr"></div>
         </div>
-        <input type="text" id="${prefix}CaptchaInput" placeholder="اكتب الكود هنا أو دوس انسخ" autocomplete="off" dir="ltr" required>
+        <input type="text" id="${prefix}CaptchaInput" placeholder="${t('captcha.placeholder')}" data-i18n-ph="captcha.placeholder" autocomplete="off" dir="ltr" required>
     </div>`;
 }

@@ -4,7 +4,7 @@
 async function renderSiteFooter() {
     if (document.getElementById('siteFooter')) return;
     const year = new Date().getFullYear();
-    const defaultText = `© جميع حقوق الملكية الفكرية لهذا التطبيق محفوظة لدى الشركة المطوّرة — مجمع نهج الشفاء الطبي العام ${year}`;
+    const defaultText = `${t('footer.copyrightDefault', { year })}`;
     const defaultPhone1 = '01384679999';
     const defaultPhone2 = '05909331883';
     const defaultEmail = 'info@nahjalshifaa.com';
@@ -16,7 +16,7 @@ async function renderSiteFooter() {
         <div class="site-footer-inner">
             <p class="footer-copyright" id="footerCopyrightText">${defaultText}</p>
             <p class="footer-contact">
-                يمكنكم التواصل معنا:
+                <span data-i18n="footer.contactPrefix">${t('footer.contactPrefix')}</span>
                 <span class="footer-contact-item">📞 <a href="tel:${defaultPhone1}" id="footerPhone1">${defaultPhone1}</a> - <a href="tel:${defaultPhone2}" id="footerPhone2">${defaultPhone2}</a></span>
                 <span class="footer-contact-item">✉️ <a href="mailto:${defaultEmail}" id="footerEmail">${defaultEmail}</a></span>
             </p>
@@ -30,7 +30,9 @@ async function renderSiteFooter() {
 
             const customText = (settings.copyright_text || '').toString().trim();
             if (customText) {
-                document.getElementById('footerCopyrightText').textContent = customText;
+                const el = document.getElementById('footerCopyrightText');
+                el.textContent = customText;
+                el.dataset.custom = '1';
             }
 
             const phone1 = (settings.footer_phone1 || '').toString().trim();
@@ -58,5 +60,14 @@ async function renderSiteFooter() {
         // تجاهل: تفضل القيم الافتراضية شغالة لو حصل أي خطأ في تحميل الإعدادات
     }
 }
+
+// لو مفيش نص حقوق ملكية مخصص من الأدمن، نعيد توليد النص الافتراضي باللغة
+// الجديدة كل ما المستخدم يبدّل اللغة (السنة بتتحسب تلقائي وقت كل نداء)
+window.addEventListener('nsh:langchange', function () {
+    const el = document.getElementById('footerCopyrightText');
+    if (el && !el.dataset.custom) {
+        el.textContent = t('footer.copyrightDefault', { year: new Date().getFullYear() });
+    }
+});
 
 document.addEventListener('DOMContentLoaded', renderSiteFooter);

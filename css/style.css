@@ -154,6 +154,9 @@ button:disabled{ opacity: .6; cursor: not-allowed; }
 .logout-btn { background-color: var(--red); color: white; }
 .logout-btn:hover { background-color: var(--red-dark); }
 
+.lang-switch-btn{ background-color: #2e7d9b; color: #fff; }
+.lang-switch-btn:hover{ background-color: #235f78; }
+
 .back-btn { background-color: var(--blue); color: white; margin-bottom: 15px; }
 .back-btn:hover{ background-color: var(--blue-dark); }
 .check-link { display: block; margin-top: 15px; text-decoration: none; color: var(--green); font-weight: 700; }
@@ -224,7 +227,7 @@ tbody tr:nth-child(even){ background: #fbfdfb; }
 .modal-content button { margin: 5px; width: 110px; }
 
 /* ---------- view.php / report_result.php ---------- */
-.report-card { border: 1.5px solid var(--border); border-radius: var(--radius); padding: 18px 20px; margin-top: 20px; background: #fbfdfb; direction: rtl; text-align: right; box-shadow: var(--shadow); }
+.report-card { border: 1.5px solid var(--border); border-radius: var(--radius); padding: 18px 20px; margin-top: 20px; background: #fbfdfb; box-shadow: var(--shadow); }
 .report-card p { margin: 9px 0; font-size: 15px; }
 .label { font-weight: 700; width: 150px; display: inline-block; color: var(--text-muted); }
 .stamp-square {
@@ -255,7 +258,6 @@ tbody tr:nth-child(even){ background: #fbfdfb; }
 
 /* ---------- Captcha widget ---------- */
 .captcha-box{
-    text-align: right;
     margin-top: 16px;
     background: var(--bg);
     border: 1.5px solid var(--border);

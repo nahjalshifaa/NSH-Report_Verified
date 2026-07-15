@@ -24,8 +24,8 @@ async function renderWhatsAppWidget() {
         const wrapper = document.createElement('div');
         wrapper.className = 'wa-widget';
         wrapper.innerHTML = `
-            <a href="${link}" target="_blank" rel="noopener" class="wa-chat-pill">💬 تحدث معنا</a>
-            <a href="${link}" target="_blank" rel="noopener" class="wa-float-btn" aria-label="تواصل عبر واتساب">${WA_ICON_SVG}</a>
+            <a href="${link}" target="_blank" rel="noopener" class="wa-chat-pill" data-i18n="wa.chatPill">${t('wa.chatPill')}</a>
+            <a href="${link}" target="_blank" rel="noopener" class="wa-float-btn" aria-label="${t('wa.ariaContact')}" data-i18n-aria="wa.ariaContact">${WA_ICON_SVG}</a>
         `;
         document.body.appendChild(wrapper);
     } catch (e) {
